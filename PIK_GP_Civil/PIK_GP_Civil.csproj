@@ -16,22 +16,55 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
+    <OutputPath>..\..\..\..\Autodesk\AutoCAD\Pik\Settings_debug\Script\NET\ГП\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
+    <Optimize>false</Optimize>
     <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="AcadLib">
+      <HintPath>..\..\..\AcadLib\AcadLib\bin\Release\AcadLib.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="AcCoreMgd, Version=20.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\AutoCAD.NET.Core.20.0.0\lib\45\AcCoreMgd.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="AcDbMgd, Version=20.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\AutoCAD.NET.Model.20.0.0\lib\45\AcDbMgd.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="AcMgd, Version=20.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\AutoCAD.NET.20.0.0\lib\45\AcMgd.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="AecBaseMgd">
+      <HintPath>..\..\..\..\Program Files\Autodesk\AutoCAD 2016\AecBaseMgd.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="AeccDbMgd">
+      <HintPath>..\..\..\..\Program Files\Autodesk\AutoCAD 2016\C3D\AeccDbMgd.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="AutoCAD_PIK_Manager">
+      <HintPath>..\..\..\AutoCAD_PIK_Manager\AutoCAD_PIK_Manager\bin\Release\AutoCAD_PIK_Manager.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -40,7 +73,30 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Source\Commands.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Source\Lib\Settings\CopyService.cs" />
+    <Compile Include="Source\TurningPoint\TurningPointService.cs" />
+    <Compile Include="Source\TurningPoint\TurningPointOptions.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="AutoCADNetLoad.scr" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <None Include="Resources\GP_Civil_ImportSettingsKR.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
