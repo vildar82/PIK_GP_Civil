@@ -31,20 +31,32 @@ namespace PIK_GP_Civil.TurningPoint
         TurningPointOptions options;
         Document doc;
         Database db;
+        Editor ed;
         CivilDocument civil;
         ObjectId idPointStyle;
         ObjectId idLabelPointStyle;
+        ObjectId idPointGroup;
 
-        public void Start()
+        public async void Start()
         {
             doc = Application.DocumentManager.MdiActiveDocument;
             db = doc.Database;
+            ed = doc.Editor;
             civil = CivilApplication.ActiveDocument;
 
             options = TurningPointOptions.Load();
             // Изменение настроек, только для ответственных пользователей
-            if (Commands.ResponsibleUsers.Contains(Environment.UserName, StringComparer.OrdinalIgnoreCase))            
-                options = TurningPointOptions.PromptOptions(TurningPointOptions.Load());            
+            if (Commands.ResponsibleUsers.Contains(Environment.UserName, StringComparer.OrdinalIgnoreCase))
+            {
+                try
+                {
+                    options = TurningPointOptions.PromptOptions(TurningPointOptions.Load());
+                }
+                catch
+                {
+                    return;                        
+                }
+            }
 
             // Копирование стилей из шаблона при необходимости
             CopyStyles();
@@ -52,8 +64,32 @@ namespace PIK_GP_Civil.TurningPoint
             // Настроки
             SetSettings();
 
-            // Запуск команды простановки точек в вершинах полилинии            
-            doc.SendStringToExecute("CREATEPTPLYLNCTRVERTAUTO ", true, false, true);
+            // Запуск команды простановки точек в вершинах полилинии              
+            //dynamic acadApp = Application.AcadApplication;
+            //acadApp.ActiveDocument.SendCommand("CREATEPTPLYLNCTRVERTAUTO ");         
+            try
+            {
+                await ed.CommandAsync("CREATEPTPLYLNCTRVERTAUTO", Editor.PauseToken);
+            }
+            catch
+            {
+                return;
+            }                
+            while (((string)Application.GetSystemVariable("CMDNAMES")).Contains("CREATEPTPLYLNCTRVERTAUTO"))
+            {
+                try { await ed.CommandAsync(Editor.PauseToken); }
+                catch { break; }
+            }
+            //doc.SendStringToExecute("CREATEPTPLYLNCTRVERTAUTO ", true, false, true);
+
+            // Обновление точек
+            if (!idPointGroup.IsNull)
+            {
+                using (var pg = idPointGroup.Open(OpenMode.ForRead) as PointGroup)
+                {
+                    pg.Update();
+                }
+            }
         }
 
         /// <summary>
@@ -63,23 +99,31 @@ namespace PIK_GP_Civil.TurningPoint
         {
             // Настройка команды CreatePoints
             SettingsCmdCreatePoints pointsCmdSettings = civil.Settings.GetSettings<SettingsCmdCreatePoints>();
-            pointsCmdSettings.PointIdentity.NextPointNumber.Value = options.CmdCreatePointsNextPointNumber;
+            var npn = pointsCmdSettings.PointIdentity.NextPointNumber.Value;
+            try
+            {
+                pointsCmdSettings.PointIdentity.NextPointNumber.Value = options.CmdCreatePointsNextPointNumber;                
+            }
+            catch { }
             pointsCmdSettings.PointsCreation.PromptForDescriptions.Value = options.CmdCreatePointsPromptForDescription;
             pointsCmdSettings.PointsCreation.DefaultDescription.Value = options.CmdCreatePointsDefaultDescription;
 
             // Настройка группы точек - Поворотные точки_Эскиз2            
             if (!civil.PointGroups.Contains(options.PointGroupName))
             {
-                var idpointGroup = civil.PointGroups.Add(options.PointGroupName);
-                using (var pointGroup = idpointGroup.Open(OpenMode.ForRead) as PointGroup)
+                idPointGroup = civil.PointGroups.Add(options.PointGroupName);
+                using (var pointGroup = idPointGroup.Open(OpenMode.ForRead) as PointGroup)
                 {
                     pointGroup.PointStyleId = idPointStyle;
                     pointGroup.PointLabelStyleId = idLabelPointStyle;
                     StandardPointGroupQuery query = new StandardPointGroupQuery();
                     query.IncludeRawDescriptions = options.CmdCreatePointsDefaultDescription;
-                    pointGroup.SetQuery(query);
-                    pointGroup.Update();
+                    pointGroup.SetQuery(query);                    
                 }
+            }
+            else
+            {
+                idPointGroup = civil.PointGroups[options.PointGroupName];
             }
         }
 
