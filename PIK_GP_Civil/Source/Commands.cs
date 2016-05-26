@@ -29,7 +29,7 @@ namespace PIK_GP_Civil
         {            
             CommandsPalette = new List<IPaletteCommand>()
             {
-                new PaletteCommand(ResponsibleUsers, "Создание поворотных точек", Properties.Resources.GP_Civil_ImportSettingsKR,
+                new PaletteCommand(ResponsibleUsers, "Создание поворотных точек", Properties.Resources.GP_Civil_TutningPoints,
                         Command_Civil_TurningPointCreate, "", GroupCivil),                
             };
         }

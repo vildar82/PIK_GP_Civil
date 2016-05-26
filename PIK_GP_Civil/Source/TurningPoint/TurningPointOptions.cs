@@ -67,9 +67,9 @@ namespace PIK_GP_Civil.TurningPoint
         [Description("Дата последних изменений в файле шаблона связанных с командой создания поворотных точек.")]        
         public DateTime DateChanges { get; set; }
 
-        public TurningPointOptions PromptOptions()
+        public static TurningPointOptions PromptOptions(TurningPointOptions options)
         {
-            TurningPointOptions resVal = this;
+            TurningPointOptions resVal = options;
             //Запрос начальных значений
             AcadLib.UI.FormProperties formProp = new AcadLib.UI.FormProperties();
             TurningPointOptions thisCopy = (TurningPointOptions)resVal.MemberwiseClone();
@@ -81,7 +81,7 @@ namespace PIK_GP_Civil.TurningPoint
             try
             {
                 resVal = thisCopy;
-                Save();
+                resVal.Save();
             }
             catch (Exception ex)
             {

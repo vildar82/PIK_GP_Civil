@@ -14,6 +14,7 @@ using AcadLib.Files;
 using AcadLib.Errors;
 using PIK_GP_Civil.Lib.Settings;
 using Autodesk.Civil.Settings;
+using Autodesk.AutoCAD.EditorInput;
 
 namespace PIK_GP_Civil.TurningPoint
 {
@@ -43,13 +44,16 @@ namespace PIK_GP_Civil.TurningPoint
             options = TurningPointOptions.Load();
             // Изменение настроек, только для ответственных пользователей
             if (Commands.ResponsibleUsers.Contains(Environment.UserName, StringComparer.OrdinalIgnoreCase))            
-                options = options.PromptOptions();            
+                options = TurningPointOptions.PromptOptions(TurningPointOptions.Load());            
 
             // Копирование стилей из шаблона при необходимости
             CopyStyles();
 
             // Настроки
             SetSettings();
+
+            // Запуск команды простановки точек в вершинах полилинии            
+            doc.SendStringToExecute("CREATEPTPLYLNCTRVERTAUTO ", true, false, true);
         }
 
         /// <summary>
@@ -148,7 +152,7 @@ namespace PIK_GP_Civil.TurningPoint
         private DateTime GetCurrentStylesDate()
         {
             // Чтение даты из словаря
-            AcadLib.DictNOD nod = new AcadLib.DictNOD(innerDictName);
+            AcadLib.DictNOD nod = new AcadLib.DictNOD(innerDictName, true);
             var value = nod.Load(recDateStyles, DateTime.MinValue.ToString());
             DateTime res;
             DateTime.TryParse(value, out res);
@@ -161,7 +165,7 @@ namespace PIK_GP_Civil.TurningPoint
         private void SaveStylesDate()
         {
             // Чтение даты из словаря
-            AcadLib.DictNOD nod = new AcadLib.DictNOD(innerDictName);
+            AcadLib.DictNOD nod = new AcadLib.DictNOD(innerDictName, true);
             nod.Save(DateTime.Now.ToString(), recDateStyles);            
         }
     }
