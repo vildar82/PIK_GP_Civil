@@ -69,5 +69,15 @@ namespace PIK_GP_Civil.Properties {
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
+        
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap GP_Civil_TutningPointsTable {
+            get {
+                object obj = ResourceManager.GetObject("GP_Civil_TutningPointsTable", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
     }
 }

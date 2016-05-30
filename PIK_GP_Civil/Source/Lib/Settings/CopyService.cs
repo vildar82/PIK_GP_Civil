@@ -26,17 +26,18 @@ namespace PIK_GP_Civil.Lib.Settings
         /// <summary>
         /// Копирование стиля из коллекции стилей
         /// </summary>        
-        public void CopyStyle(string copyStyle, StyleCollectionBase styleSourceCollection)
+        public bool CopyStyle(string copyStyle, StyleCollectionBase styleSourceCollection)
         {
             if (styleSourceCollection.Contains(copyStyle))
             {
                 var idStyle = styleSourceCollection[copyStyle];
-                ExportStyle(dbDest, idStyle);                
-                
+                ExportStyle(dbDest, idStyle);
+                return true;
             }
             else
             {
-                Inspector.AddError($"В шаблоне не найден стиль точки '{copyStyle}'", System.Drawing.SystemIcons.Warning);                
+                Inspector.AddError($"В шаблоне не найден стиль точки '{copyStyle}'", System.Drawing.SystemIcons.Warning);
+                return false;
             }
         }
 

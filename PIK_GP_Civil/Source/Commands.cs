@@ -7,6 +7,7 @@ using AcadLib;
 using AcadLib.PaletteCommands;
 using Autodesk.AutoCAD.Runtime;
 using Autodesk.Civil.ApplicationServices;
+using PIK_GP_Civil.Properties;
 
 [assembly: CommandClass(typeof(PIK_GP_Civil.Commands))]
 [assembly: ExtensionApplication(typeof(PIK_GP_Civil.Commands))]
@@ -22,25 +23,36 @@ namespace PIK_GP_Civil
         public const string Group = AutoCAD_PIK_Manager.Commands.Group;
         public const string GroupCivil = "Civil";
         public static List<IPaletteCommand> CommandsPalette { get; set; }
-        // Комманды
-        private const string Command_Civil_TurningPointCreate = "GP_Civil_TurningPointCreate";
+        // Комманды        
 
         public static void InitCommands()
         {            
             CommandsPalette = new List<IPaletteCommand>()
             {
-                new PaletteCommand(ResponsibleUsers, "Создание поворотных точек", Properties.Resources.GP_Civil_TutningPoints,
-                        Command_Civil_TurningPointCreate, "", GroupCivil),                
+                new PaletteCommand("Создание поворотных точек", Resources.GP_Civil_TutningPoints,
+                        nameof(GP_Civil_TurningPointCreate), "", GroupCivil),
+                new PaletteCommand("Создание таблицы поворотных точек", Resources.GP_Civil_TutningPointsTable,
+                        nameof(GP_Civil_TurningPointTable), "", GroupCivil),
             };
         }
 
-        [CommandMethod(Group, Command_Civil_TurningPointCreate, CommandFlags.Modal)]
-        public static void TurningPointCreate()
+        [CommandMethod(Group,nameof(GP_Civil_TurningPointCreate), CommandFlags.Modal)]
+        public static void GP_Civil_TurningPointCreate()
         {            
             CommandStart.Start(doc =>
             {
                 TurningPoint.TurningPointService tps = new TurningPoint.TurningPointService();
-                tps.Start();
+                tps.StartCreatePoints();
+            });
+        }
+
+        [CommandMethod(Group, nameof(GP_Civil_TurningPointTable), CommandFlags.Modal)]
+        public static void GP_Civil_TurningPointTable()
+        {
+            CommandStart.Start(doc =>
+            {
+                TurningPoint.TurningPointService tps = new TurningPoint.TurningPointService();
+                tps.StartCreateTable();
             });
         }
 

@@ -36,8 +36,14 @@ namespace PIK_GP_Civil.TurningPoint
         [DisplayName("Стиль метки точек")]
         [Description("Копируемый стиль метки точек из файла шаблона.")]
         [DefaultValue("PIK_Номер Точки")]
-        public string StylesLabelPoint { get; set; } = "PIK_Номер Точки";
-                
+        public string StyleLabelPoint { get; set; } = "PIK_Номер Точки";
+
+        [Category("Стили")]
+        [DisplayName("Стиль таблиц точек")]
+        [Description("Копируемый стиль таблицы точек из файла шаблона.")]
+        [DefaultValue("PIK_Таблица поворотных точек")]
+        public string StyleTablePoint { get; set; } = "PIK_Таблица поворотных точек";
+
         [Category("Команда - CreatePoints")]
         [DisplayName("Next Point Number")]
         [Description("Значение для: PointIdentity->Next Point Number.")]
@@ -55,6 +61,9 @@ namespace PIK_GP_Civil.TurningPoint
         [Description("Значение для: Points Creation->Default Description.")]
         [DefaultValue("Поворотные")]
         public string CmdCreatePointsDefaultDescription { get; set; } = "Поворотные";
+        [XmlIgnore]
+        [Browsable(false)]
+        public string OldCmdCreatePointsDefaultDescription { get; set; }
 
         [Category("Навигатор - Группа точек")]
         [DisplayName("Имя группы")]

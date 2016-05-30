@@ -35,9 +35,11 @@ namespace PIK_GP_Civil.TurningPoint
         CivilDocument civil;
         ObjectId idPointStyle;
         ObjectId idLabelPointStyle;
+        ObjectId idTablePointStyle;
+        ObjectId idTablePointStyleOld;
         ObjectId idPointGroup;
 
-        public async void Start()
+        private void Init()
         {
             doc = Application.DocumentManager.MdiActiveDocument;
             db = doc.Database;
@@ -54,15 +56,18 @@ namespace PIK_GP_Civil.TurningPoint
                 }
                 catch
                 {
-                    return;                        
+                    throw new Exception(AcadLib.General.CanceledByUser);
                 }
             }
-
             // Копирование стилей из шаблона при необходимости
             CopyStyles();
-
             // Настроки
             SetSettings();
+        }             
+
+        public async void StartCreatePoints()
+        {
+            Init();
 
             // Запуск команды простановки точек в вершинах полилинии              
             //dynamic acadApp = Application.AcadApplication;
@@ -75,7 +80,7 @@ namespace PIK_GP_Civil.TurningPoint
             {
                 return;
             }                
-            while (((string)Application.GetSystemVariable("CMDNAMES")).Contains("CREATEPTPLYLNCTRVERTAUTO"))
+            while (((string)Application.GetSystemVariable("CMDNAMES")).Contains("CREATEPTPLYLNCTRVERTAUTO", StringComparison.OrdinalIgnoreCase))
             {
                 try { await ed.CommandAsync(Editor.PauseToken); }
                 catch { break; }
@@ -88,7 +93,34 @@ namespace PIK_GP_Civil.TurningPoint
                 using (var pg = idPointGroup.Open(OpenMode.ForRead) as PointGroup)
                 {
                     pg.Update();
+                    RestoreSettings();
                 }
+            }
+        }
+
+        public async void StartCreateTable()
+        {
+            Init();
+
+            // Запуск команды простановки точек в вершинах полилинии                          
+            try
+            {
+                await ed.CommandAsync("_AeccAddPointTable", Editor.PauseToken);
+            }
+            catch
+            {
+                return;
+            }
+            while (((string)Application.GetSystemVariable("CMDNAMES")).Contains("AeccAddPointTable", StringComparison.OrdinalIgnoreCase))
+            {
+                try { await ed.CommandAsync(Editor.PauseToken); }
+                catch { break; }
+            }
+
+            // Обновление точек
+            if (!idTablePointStyleOld.IsNull)
+            {
+                RestoreSettings();
             }
         }
 
@@ -98,14 +130,14 @@ namespace PIK_GP_Civil.TurningPoint
         private void SetSettings()
         {
             // Настройка команды CreatePoints
-            SettingsCmdCreatePoints pointsCmdSettings = civil.Settings.GetSettings<SettingsCmdCreatePoints>();
-            var npn = pointsCmdSettings.PointIdentity.NextPointNumber.Value;
+            SettingsCmdCreatePoints pointsCmdSettings = civil.Settings.GetSettings<SettingsCmdCreatePoints>();            
             try
             {
                 pointsCmdSettings.PointIdentity.NextPointNumber.Value = options.CmdCreatePointsNextPointNumber;                
             }
             catch { }
             pointsCmdSettings.PointsCreation.PromptForDescriptions.Value = options.CmdCreatePointsPromptForDescription;
+            options.OldCmdCreatePointsDefaultDescription = pointsCmdSettings.PointsCreation.DefaultDescription.Value;
             pointsCmdSettings.PointsCreation.DefaultDescription.Value = options.CmdCreatePointsDefaultDescription;
 
             // Настройка группы точек - Поворотные точки_Эскиз2            
@@ -114,8 +146,10 @@ namespace PIK_GP_Civil.TurningPoint
                 idPointGroup = civil.PointGroups.Add(options.PointGroupName);
                 using (var pointGroup = idPointGroup.Open(OpenMode.ForRead) as PointGroup)
                 {
-                    pointGroup.PointStyleId = idPointStyle;
-                    pointGroup.PointLabelStyleId = idLabelPointStyle;
+                    if (!idPointStyle.IsNull)
+                        pointGroup.PointStyleId = idPointStyle;
+                    if (!idLabelPointStyle.IsNull)
+                        pointGroup.PointLabelStyleId = idLabelPointStyle;
                     StandardPointGroupQuery query = new StandardPointGroupQuery();
                     query.IncludeRawDescriptions = options.CmdCreatePointsDefaultDescription;
                     pointGroup.SetQuery(query);                    
@@ -124,6 +158,26 @@ namespace PIK_GP_Civil.TurningPoint
             else
             {
                 idPointGroup = civil.PointGroups[options.PointGroupName];
+            }
+
+            // Настройка стиля таблиц точек
+            if (!idTablePointStyle.IsNull)
+            {
+                SettingsCmdAddPointTable cmdAddPointTable = civil.Settings.GetSettings<SettingsCmdAddPointTable>();
+                idTablePointStyleOld = cmdAddPointTable.TableCreation.TableStyleId.Value;
+                cmdAddPointTable.TableCreation.TableStyleId.Value = idTablePointStyle;
+            }
+        }
+
+        private void RestoreSettings()
+        {
+            SettingsCmdCreatePoints pointsCmdSettings = civil.Settings.GetSettings<SettingsCmdCreatePoints>();
+            pointsCmdSettings.PointsCreation.DefaultDescription.Value = options.OldCmdCreatePointsDefaultDescription;
+
+            if (!idTablePointStyleOld.IsNull)
+            {
+                SettingsCmdAddPointTable cmdAddPointTable = civil.Settings.GetSettings<SettingsCmdAddPointTable>();
+                cmdAddPointTable.TableCreation.TableStyleId.Value = idTablePointStyleOld;
             }
         }
 
@@ -148,12 +202,14 @@ namespace PIK_GP_Civil.TurningPoint
                 using (var t = dbTemplate.TransactionManager.StartTransaction())
                 {
                     // Копирование стиля точек
-                    copyService.CopyStyle(options.StylePoint, civilTemplate.Styles.PointStyles);
-                    idPointStyle = civil.Styles.PointStyles[options.StylePoint];
+                    if (copyService.CopyStyle(options.StylePoint, civilTemplate.Styles.PointStyles))
+                        idPointStyle = civil.Styles.PointStyles[options.StylePoint];
                     // Стиль меток
-                    copyService.CopyStyle(options.StylesLabelPoint,
-                        civilTemplate.Styles.LabelStyles.PointLabelStyles.LabelStyles);
-                    idLabelPointStyle = civil.Styles.LabelStyles.PointLabelStyles.LabelStyles[options.StylesLabelPoint];
+                    if (copyService.CopyStyle(options.StyleLabelPoint, civilTemplate.Styles.LabelStyles.PointLabelStyles.LabelStyles))
+                        idLabelPointStyle = civil.Styles.LabelStyles.PointLabelStyles.LabelStyles[options.StyleLabelPoint];
+                    // Копирование стиля таблиц
+                    if (copyService.CopyStyle(options.StyleTablePoint, civilTemplate.Styles.TableStyles.PointTableStyles))
+                        idTablePointStyle = civil.Styles.TableStyles.PointTableStyles[options.StyleTablePoint];
 
                     SaveStylesDate();
 
@@ -164,10 +220,12 @@ namespace PIK_GP_Civil.TurningPoint
 
         private bool IsExistStyles()
         {
-            idLabelPointStyle = checkStyle(options.StylesLabelPoint, civil.Styles.LabelStyles.PointLabelStyles.LabelStyles);
+            idLabelPointStyle = checkStyle(options.StyleLabelPoint, civil.Styles.LabelStyles.PointLabelStyles.LabelStyles);
             if (idLabelPointStyle.IsNull) return false;
             idPointStyle = checkStyle(options.StylePoint, civil.Styles.PointStyles);
             if (idPointStyle.IsNull) return false;
+            idTablePointStyle = checkStyle(options.StyleTablePoint, civil.Styles.TableStyles.PointTableStyles);
+            if (idTablePointStyle.IsNull) return false;
             return true;
         }
 
@@ -208,7 +266,7 @@ namespace PIK_GP_Civil.TurningPoint
         /// </summary>        
         private void SaveStylesDate()
         {
-            // Чтение даты из словаря
+            // сохранение даты в словарь
             AcadLib.DictNOD nod = new AcadLib.DictNOD(innerDictName, true);
             nod.Save(DateTime.Now.ToString(), recDateStyles);            
         }
