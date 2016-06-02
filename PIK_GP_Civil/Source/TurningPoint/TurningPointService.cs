@@ -26,9 +26,10 @@ namespace PIK_GP_Civil.TurningPoint
     /// </summary>
     public class TurningPointService
     {
-        const string innerDictName = "CIVIL_TurningPoint";
+        public const string innerDictName = "CIVIL_TurningPoint";
         const string recDateStyles = "StylesDate";
         TurningPointOptions options;
+        TurningUserOptions optionsUser;
         Document doc;
         Database db;
         Editor ed;
@@ -59,6 +60,8 @@ namespace PIK_GP_Civil.TurningPoint
                     throw new Exception(AcadLib.General.CanceledByUser);
                 }
             }
+
+            optionsUser = TurningUserOptions.PromptOptions(TurningUserOptions.Load(options.StylesLabelPoint));            
             // Копирование стилей из шаблона при необходимости
             CopyStyles();
             // Настроки
@@ -144,20 +147,21 @@ namespace PIK_GP_Civil.TurningPoint
             if (!civil.PointGroups.Contains(options.PointGroupName))
             {
                 idPointGroup = civil.PointGroups.Add(options.PointGroupName);
-                using (var pointGroup = idPointGroup.Open(OpenMode.ForRead) as PointGroup)
-                {
-                    if (!idPointStyle.IsNull)
-                        pointGroup.PointStyleId = idPointStyle;
-                    if (!idLabelPointStyle.IsNull)
-                        pointGroup.PointLabelStyleId = idLabelPointStyle;
-                    StandardPointGroupQuery query = new StandardPointGroupQuery();
-                    query.IncludeRawDescriptions = options.CmdCreatePointsDefaultDescription;
-                    pointGroup.SetQuery(query);                    
-                }
+                
             }
             else
             {
                 idPointGroup = civil.PointGroups[options.PointGroupName];
+            }
+            using (var pointGroup = idPointGroup.Open(OpenMode.ForRead) as PointGroup)
+            {
+                if (!idPointStyle.IsNull)
+                    pointGroup.PointStyleId = idPointStyle;
+                idLabelPointStyle = civil.Styles.LabelStyles.PointLabelStyles.LabelStyles[optionsUser.PaintLabelStyle];
+                pointGroup.PointLabelStyleId = idLabelPointStyle;
+                StandardPointGroupQuery query = new StandardPointGroupQuery();
+                query.IncludeRawDescriptions = options.CmdCreatePointsDefaultDescription;
+                pointGroup.SetQuery(query);
             }
 
             // Настройка стиля таблиц точек
@@ -201,12 +205,12 @@ namespace PIK_GP_Civil.TurningPoint
 
                 using (var t = dbTemplate.TransactionManager.StartTransaction())
                 {
-                    // Копирование стиля точек
+                    // Копирование стиля точек                    
                     if (copyService.CopyStyle(options.StylePoint, civilTemplate.Styles.PointStyles))
                         idPointStyle = civil.Styles.PointStyles[options.StylePoint];
                     // Стиль меток
-                    if (copyService.CopyStyle(options.StyleLabelPoint, civilTemplate.Styles.LabelStyles.PointLabelStyles.LabelStyles))
-                        idLabelPointStyle = civil.Styles.LabelStyles.PointLabelStyles.LabelStyles[options.StyleLabelPoint];
+                    copyService.CopyStyle(options.StylesLabelPoint, civilTemplate.Styles.LabelStyles.PointLabelStyles.LabelStyles);
+                    //idLabelPointStyle = civil.Styles.LabelStyles.PointLabelStyles.LabelStyles[optionsUser.StyleLabelPoint];
                     // Копирование стиля таблиц
                     if (copyService.CopyStyle(options.StyleTablePoint, civilTemplate.Styles.TableStyles.PointTableStyles))
                         idTablePointStyle = civil.Styles.TableStyles.PointTableStyles[options.StyleTablePoint];
@@ -220,8 +224,11 @@ namespace PIK_GP_Civil.TurningPoint
 
         private bool IsExistStyles()
         {
-            idLabelPointStyle = checkStyle(options.StyleLabelPoint, civil.Styles.LabelStyles.PointLabelStyles.LabelStyles);
-            if (idLabelPointStyle.IsNull) return false;
+            foreach (var item in options.StylesLabelPoint)
+            {
+                idLabelPointStyle = checkStyle(item, civil.Styles.LabelStyles.PointLabelStyles.LabelStyles);
+                if (idLabelPointStyle.IsNull) return false;
+            }            
             idPointStyle = checkStyle(options.StylePoint, civil.Styles.PointStyles);
             if (idPointStyle.IsNull) return false;
             idTablePointStyle = checkStyle(options.StyleTablePoint, civil.Styles.TableStyles.PointTableStyles);

@@ -23,6 +23,14 @@ namespace PIK_GP_Civil.Lib.Settings
             this.dbDest = dbDest;
         }
 
+        public void CopyStyle(string[] copyStyles, StyleCollectionBase styleSourceCollection)
+        {
+            foreach (var item in copyStyles)
+            {
+                CopyStyle(item, styleSourceCollection);
+            }
+        }
+
         /// <summary>
         /// Копирование стиля из коллекции стилей
         /// </summary>        
@@ -32,7 +40,7 @@ namespace PIK_GP_Civil.Lib.Settings
             {
                 var idStyle = styleSourceCollection[copyStyle];
                 ExportStyle(dbDest, idStyle);
-                return true;
+                return true;              
             }
             else
             {

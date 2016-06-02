@@ -32,7 +32,6 @@
   <ItemGroup>
     <Reference Include="AcadLib">
       <HintPath>..\..\..\AcadLib\AcadLib\bin\Release\AcadLib.dll</HintPath>
-      <Private>False</Private>
     </Reference>
     <Reference Include="AcCoreMgd, Version=20.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\AutoCAD.NET.Core.20.0.0\lib\45\AcCoreMgd.dll</HintPath>
@@ -84,6 +83,7 @@
     <Compile Include="Source\Lib\Settings\CopyService.cs" />
     <Compile Include="Source\TurningPoint\TurningPointService.cs" />
     <Compile Include="Source\TurningPoint\TurningPointOptions.cs" />
+    <Compile Include="Source\TurningPoint\TurningUserOptions.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="AutoCADNetLoad.scr" />

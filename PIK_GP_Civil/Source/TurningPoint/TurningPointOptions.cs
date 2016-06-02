@@ -16,9 +16,7 @@ namespace PIK_GP_Civil.TurningPoint
     public class TurningPointOptions
     {        
         static string FileXml = Path.Combine(AutoCAD_PIK_Manager.Settings.PikSettings.ServerShareSettingsFolder,
-                                @"ГП\\Civil\\TurningPoint.xml");
-        const string DictNod = "PIK";
-        //public const string RecAbsoluteZero = "AbsoluteZero";
+                                @"ГП\\Civil\\TurningPoint.xml");        
 
         [Category("Файл шаблона")]
         [DisplayName("Путь к файлу шаблона")]
@@ -30,13 +28,13 @@ namespace PIK_GP_Civil.TurningPoint
         [DisplayName("Стиль точки")]
         [Description("Копируемый стиль точки из файла шаблона.")]
         [DefaultValue("PIK_Поворотные точки")]
-        public string StylePoint { get; set; } = "PIK_Поворотные точки";
+        public string StylePoint { get; set; } =  "PIK_Поворотные точки";
 
         [Category("Стили")]
         [DisplayName("Стиль метки точек")]
         [Description("Копируемый стиль метки точек из файла шаблона.")]
-        [DefaultValue("PIK_Номер Точки")]
-        public string StyleLabelPoint { get; set; } = "PIK_Номер Точки";
+        [DefaultValue(new[] { "PIK_Номер Точки", "PIK_Номер Точки_без координат" })]
+        public string[] StylesLabelPoint { get; set; } = new[] { "PIK_Номер Точки", "PIK_Номер Точки_без координат" };
 
         [Category("Стили")]
         [DisplayName("Стиль таблиц точек")]
@@ -149,18 +147,6 @@ namespace PIK_GP_Civil.TurningPoint
             //SaveToNOD();
             AcadLib.Files.SerializerXml ser = new AcadLib.Files.SerializerXml(FileXml);
             ser.SerializeList(this);
-        }
-
-        private void SaveToNOD()
-        {
-            //var nod = new AcadLib.DictNOD(DictNod);
-            //nod.Save(AbsoluteZero, RecAbsoluteZero);
-        }
-
-        private void LoadFromNOD()
-        {
-            //var nod = new AcadLib.DictNOD(DictNod);
-            //AbsoluteZero = nod.Load(RecAbsoluteZero, 150.00);
-        }
+        } 
     }
 }
