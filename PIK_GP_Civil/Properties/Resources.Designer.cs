@@ -63,6 +63,16 @@ namespace PIK_GP_Civil.Properties {
         /// <summary>
         ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap GP_Civil_KPTXML {
+            get {
+                object obj = ResourceManager.GetObject("GP_Civil_KPTXML", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap GP_Civil_TutningPoints {
             get {
                 object obj = ResourceManager.GetObject("GP_Civil_TutningPoints", resourceCulture);
