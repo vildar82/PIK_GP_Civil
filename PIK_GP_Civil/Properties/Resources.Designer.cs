@@ -63,9 +63,9 @@ namespace PIK_GP_Civil.Properties {
         /// <summary>
         ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap GP_Civil_KPTXML {
+        internal static System.Drawing.Bitmap GP_Civil_OKSXML {
             get {
-                object obj = ResourceManager.GetObject("GP_Civil_KPTXML", resourceCulture);
+                object obj = ResourceManager.GetObject("GP_Civil_OKSXML", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

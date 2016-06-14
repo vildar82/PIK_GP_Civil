@@ -21,6 +21,7 @@ namespace PIK_GP_Civil
         /// </summary>
         public static readonly List<string> ResponsibleUsers = new List<string>() { "PrudnikovVS", AutoCAD_PIK_Manager.Env.CadManLogin };
         public const string Group = AutoCAD_PIK_Manager.Commands.Group;
+        public const string GroupKP = PIK_GP_Acad.Commands.GroupKP;
         public const string GroupCivil = "Civil";        
         public static List<IPaletteCommand> CommandsPalette { get; set; }
         // Комманды        
@@ -29,21 +30,21 @@ namespace PIK_GP_Civil
         {            
             CommandsPalette = new List<IPaletteCommand>()
             {
-                new PaletteCommand(ResponsibleUsers, "Кадастр", Resources.GP_Civil_KPTXML,
-                        nameof(GP_Civil_KPTXML), "Конвертер выписок РосРеестра"),
+                new PaletteCommand("Кадастр", Resources.GP_Civil_OKSXML,
+                        nameof(GP_Civil_OKSXML), "Конвертер выписок РосРеестра", GroupKP),
                 new PaletteCommand("Создание поворотных точек", Resources.GP_Civil_TutningPoints,
-                        nameof(GP_Civil_TurningPointCreate), "", GroupCivil),
+                        nameof(GP_Civil_TurningPointCreate), "", GroupKP),
                 new PaletteCommand("Создание таблицы поворотных точек", Resources.GP_Civil_TutningPointsTable,
-                        nameof(GP_Civil_TurningPointTable), "", GroupCivil),
+                        nameof(GP_Civil_TurningPointTable), "", GroupKP),
             };
         }
 
-        [CommandMethod(Group, nameof(GP_Civil_KPTXML), CommandFlags.Modal)]
-        public static void GP_Civil_KPTXML()
+        [CommandMethod(Group, nameof(GP_Civil_OKSXML), CommandFlags.Modal)]
+        public static void GP_Civil_OKSXML()
         {
             CommandStart.Start(doc =>
             {
-                Kadastr.KadastrService.KPTXML(doc);
+                Kadastr.KadastrService.OKSXML(doc);
             });
         }
 

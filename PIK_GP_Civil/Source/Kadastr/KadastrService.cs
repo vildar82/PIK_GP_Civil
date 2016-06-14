@@ -12,7 +12,7 @@ namespace PIK_GP_Civil.Kadastr
 {
     public static class KadastrService
     {
-        public static void KPTXML(Document doc)
+        public static void OKSXML(Document doc)
         {
             Database db = doc.Database;
             // сборка кадастра
@@ -31,7 +31,7 @@ namespace PIK_GP_Civil.Kadastr
             PIK_GP_Acad.InsertBlock.LoadBlock(new List<string> { "PB", "PB1" }, db);
 
             // Запуск команды KPTXML            
-            doc.SendStringToExecute("KPTXML ", false, true, true);
+            doc.SendStringToExecute("OKSXML ", false, true, true);
         }
     }
 }
