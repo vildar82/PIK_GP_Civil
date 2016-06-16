@@ -84,6 +84,7 @@
     </Compile>
     <Compile Include="Source\Commands.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Source\InfraWorks\ExportService.cs" />
     <Compile Include="Source\Kadastr\KadastrService.cs" />
     <Compile Include="Source\Lib\Settings\CopyService.cs" />
     <Compile Include="Source\TurningPoint\TurningPointService.cs" />
@@ -108,6 +109,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\GP_Civil_OKSXML.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\KP_ExportToInfraworks.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

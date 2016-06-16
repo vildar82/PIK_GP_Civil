@@ -36,6 +36,8 @@ namespace PIK_GP_Civil
                         nameof(GP_Civil_TurningPointCreate), "", GroupKP),
                 new PaletteCommand("Создание таблицы поворотных точек", Resources.GP_Civil_TutningPointsTable,
                         nameof(GP_Civil_TurningPointTable), "", GroupKP),
+                new PaletteCommand("Экспорт в InfraWorks", Resources.KP_ExportToInfraworks,
+                        nameof(GP_Civil_ExportToInfraWorks), "Копирование контуров полилиний из блоков инфраструктуры (блок-секции, СОШ, ДОО) в модель, для последующего экспорта в InfraWorks.", GroupKP)                
             };
         }
 
@@ -65,6 +67,15 @@ namespace PIK_GP_Civil
             {
                 TurningPoint.TurningPointService tps = new TurningPoint.TurningPointService();
                 tps.StartCreateTable();
+            });
+        }
+
+        [CommandMethod(Group, nameof(GP_Civil_ExportToInfraWorks), CommandFlags.Modal)]
+        public static void GP_Civil_ExportToInfraWorks ()
+        {
+            CommandStart.Start(doc =>
+            {
+                InfraWorks.ExportService.Export(doc);
             });
         }
 
