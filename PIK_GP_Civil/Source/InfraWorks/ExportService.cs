@@ -14,6 +14,7 @@ namespace PIK_GP_Civil.InfraWorks
         private const string blNameDOO = PIK_GP_Acad.Commands.BlockNameDOO;
         private const string blNameSchool = PIK_GP_Acad.Commands.BlockNameSchool;
         private const string blNameKpParking = PIK_GP_Acad.Commands.BlockNameKpParking;
+        private const string blKpParkingLayerContour = "ГП_секции_посадка";
 
         public static void Export (Document doc)
         {
@@ -29,12 +30,11 @@ namespace PIK_GP_Civil.InfraWorks
                     if (blRef == null) continue;
                     var blName = blRef.GetEffectiveName();
 
+                    List<Polyline> pls = null;
                     // Блок-Секции Концепции
-                    if (PIK_GP_Acad.BlockSection.SectionService.IsBlockNameSection(blName))
+                    if (PIK_GP_Acad.KP.KP_BlockSection.KP_BlockSectionService.IsBlockSection(blName))
                     {
-                        PIK_GP_Acad.BlockSection.BlockSectionContours.CreateContour(doc);
-                        var pl = PIK_GP_Acad.BlockSection.BlockSectionContours.FindContourPolyline(blRef);
-                        CopyPl(cs, blRef, pl);
+                        pls = getPlsInBs(blRef.BlockTableRecord, blKpParkingLayerContour);
                     }
                     // ДОО, СОШ, Паркинг
                     else if (blName.Equals(blNameDOO) ||
@@ -42,13 +42,16 @@ namespace PIK_GP_Civil.InfraWorks
                         blName.Equals(blNameKpParking))                        
                     {
                         // Определение полилиний
-                        List<Polyline> plsDoo = getPlsInBs(blRef.BlockTableRecord);                        
-                        // Скопировать все полтилинии
-                        foreach (var pl in plsDoo)
+                        pls = getPlsInBs(blRef.BlockTableRecord);                                                
+                    }
+                    // Скопировать все полтилинии
+                    if (pls != null)
+                    {
+                        foreach (var pl in pls)
                         {
                             CopyPl(cs, blRef, pl);
                         }
-                    }                   
+                    }
                 }
                 t.Commit();
             }
@@ -68,7 +71,7 @@ namespace PIK_GP_Civil.InfraWorks
         /// <summary>
         /// Получение всех полилиний в блоке - СОШ, ДОШ
         /// </summary>        
-        private static List<Polyline> getPlsInBs (ObjectId idBtr)
+        private static List<Polyline> getPlsInBs (ObjectId idBtr, string layer = null)
         {
             List<Polyline> pls = new List<Polyline> ();                        
             var btr = idBtr.GetObject( OpenMode.ForRead) as BlockTableRecord;
@@ -76,7 +79,10 @@ namespace PIK_GP_Civil.InfraWorks
             {
                 var pl = item.GetObject( OpenMode.ForRead, false, true) as Polyline;
                 if (pl == null || !pl.Visible) continue;
-                pls.Add(pl);
+                if (string.IsNullOrEmpty(layer) || pl.Layer.Equals(layer))
+                {
+                    pls.Add(pl);
+                }
             }            
             return pls;
         }
