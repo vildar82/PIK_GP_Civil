@@ -13,6 +13,7 @@ namespace PIK_GP_Civil.InfraWorks
     {
         private const string blNameDOO = PIK_GP_Acad.Commands.BlockNameDOO;
         private const string blNameSchool = PIK_GP_Acad.Commands.BlockNameSchool;
+        private const string blNameKpParking = PIK_GP_Acad.Commands.BlockNameKpParking;
 
         public static void Export (Document doc)
         {
@@ -35,27 +36,19 @@ namespace PIK_GP_Civil.InfraWorks
                         var pl = PIK_GP_Acad.BlockSection.BlockSectionContours.FindContourPolyline(blRef);
                         CopyPl(cs, blRef, pl);
                     }
-                    // ДОО
-                    else if (blName.Equals(blNameDOO))                        
+                    // ДОО, СОШ, Паркинг
+                    else if (blName.Equals(blNameDOO) ||
+                        blName.Equals(blNameSchool) ||
+                        blName.Equals(blNameKpParking))                        
                     {
-                        // Определение полилиний для СОШ, ДОШ
+                        // Определение полилиний
                         List<Polyline> plsDoo = getPlsInBs(blRef.BlockTableRecord);                        
                         // Скопировать все полтилинии
                         foreach (var pl in plsDoo)
                         {
                             CopyPl(cs, blRef, pl);
                         }
-                    }
-                    // СОШ
-                    else if (blName.Equals(blNameSchool))
-                    {
-                        List<Polyline> plsSchool = getPlsInBs(blRef.BlockTableRecord);
-                        // Скопировать все полтилинии
-                        foreach (var pl in plsSchool)
-                        {
-                            CopyPl(cs, blRef, pl);
-                        }
-                    }
+                    }                   
                 }
                 t.Commit();
             }
