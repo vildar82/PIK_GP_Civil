@@ -59,6 +59,7 @@ namespace PIK_GP_Civil.InfraWorks
                 }
                 t.Commit();
             }
+            Application.ShowAlertDialog("Готово");
         }
 
         private static void CopyPl (BlockTableRecord btr, BlockReference blRef, Polyline pl)
