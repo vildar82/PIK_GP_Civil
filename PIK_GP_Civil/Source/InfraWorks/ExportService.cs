@@ -13,8 +13,7 @@ namespace PIK_GP_Civil.InfraWorks
     {
         private const string blNameDOO = PIK_GP_Acad.Commands.BlockNameDOO;
         private const string blNameSchool = PIK_GP_Acad.Commands.BlockNameSchool;
-        private const string blNameKpParking = PIK_GP_Acad.Commands.BlockNameKpParking;
-        private const string blKpParkingLayerContour = "ГП_секции_посадка";
+        private const string blNameKpParking = PIK_GP_Acad.Commands.BlockNameKpParking;        
 
         public static void Export (Document doc)
         {
@@ -34,7 +33,7 @@ namespace PIK_GP_Civil.InfraWorks
                     // Блок-Секции Концепции
                     if (PIK_GP_Acad.KP.KP_BlockSection.KP_BlockSectionService.IsBlockSection(blName))
                     {
-                        pls = getPlsInBs(blRef.BlockTableRecord, blKpParkingLayerContour);
+                        pls = getPlsInBs(blRef.BlockTableRecord, PIK_GP_Acad.KP.KP_BlockSection.KP_BlockSectionService.blKpParkingLayerContour);
                     }
                     // ДОО, СОШ, Паркинг
                     else if (blName.Equals(blNameDOO) ||
