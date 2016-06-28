@@ -79,6 +79,16 @@ namespace PIK_GP_Civil
             });
         }
 
+        [CommandMethod(Group, nameof(GP_Civil_TEP), CommandFlags.Modal)]
+        public static void GP_Civil_TEP ()
+        {
+            CommandStart.Start(doc =>
+            {
+                TEP.TEPService tep = new TEP.TEPService (doc);
+                tep.Calc();
+            });
+        }
+
         public void Initialize()
         {
             try

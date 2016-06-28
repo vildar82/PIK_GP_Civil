@@ -103,6 +103,13 @@
     <Compile Include="Source\Lib\OD\ODService.cs" />
     <Compile Include="Source\Lib\OD\ODTable.cs" />
     <Compile Include="Source\Lib\Settings\CopyService.cs" />
+    <Compile Include="Source\TEP\ClassFactory.cs" />
+    <Compile Include="Source\TEP\Classificator.cs" />
+    <Compile Include="Source\TEP\IClassificator.cs" />
+    <Compile Include="Source\TEP\ITEPRow.cs" />
+    <Compile Include="Source\TEP\TableService.cs" />
+    <Compile Include="Source\TEP\TEPRow.cs" />
+    <Compile Include="Source\TEP\TEPService.cs" />
     <Compile Include="Source\TurningPoint\TurningPointService.cs" />
     <Compile Include="Source\TurningPoint\TurningPointOptions.cs" />
     <Compile Include="Source\TurningPoint\TurningUserOptions.cs" />
