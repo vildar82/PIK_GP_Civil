@@ -22,7 +22,7 @@ namespace PIK_GP_Civil.InfraWorks.Blocks
         {            
             var blRef = IdBlRef.GetObject( OpenMode.ForRead, false, true) as BlockReference;
             // Определение полилинии контура и копирование в модель
-            var pl = ExportService.GetPls(blRef.BlockTableRecord, PIK_GP_Acad.KP.KP_BlockSection.KP_BlockSectionService.blKpParkingLayerContour).First();
+            var pl = ExportService.GetPls(blRef.BlockTableRecord, PIK_GP_Acad.KP.KP_BlockSection.KP_BlockSectionService.blKpParkingLayerAxisContour).First();
             var idPlbuilding = ExportService.CopyPl(model, blRef, pl);
             ODs.ODBuilding od = new ODs.ODBuilding (ODs.BuildingType.Live, Height);
             od.AddRecord(idPlbuilding);

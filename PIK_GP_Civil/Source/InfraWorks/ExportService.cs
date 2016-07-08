@@ -27,6 +27,9 @@ namespace PIK_GP_Civil.InfraWorks
             {
                 var cs = db.CurrentSpaceId.GetObject( OpenMode.ForWrite) as BlockTableRecord;
 
+                // трансляция старого слоя контура в блоках блок-секций на новый слой.
+                PIK_GP_Acad.KP.KP_BlockSection.KP_BlockSectionService.TransferLayerPlContours(db);
+
                 foreach (var item in cs)
                 {
                     var blRef = item.GetObject( OpenMode.ForRead, false, true) as BlockReference;
