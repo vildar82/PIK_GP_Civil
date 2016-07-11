@@ -16,6 +16,7 @@ namespace PIK_GP_Civil.InfraWorks.Blocks
             {
                 { BlockSectionInfro.BlockNameOrdinary, typeof(BlockSectionInfro) },
                 { BlockSectionInfro.BlockNameAngle, typeof(BlockSectionInfro) },
+                { BlockSectionInfro.BlockNameTower, typeof(BlockSectionInfro) },
                 { KindergartenInfro.BlockName, typeof(KindergartenInfro) },
                 { SchoolInfro.BlockName, typeof(SchoolInfro) },
                 { ParkingInfro.BlockName, typeof(ParkingInfro) }

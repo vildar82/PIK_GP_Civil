@@ -49,16 +49,24 @@ namespace PIK_GP_Civil.TEP
         private static double GetValue (ObjectId idEnt, double unitFactor, string tag)
         {
             double res = 0;
-            var pl = idEnt.GetObject( OpenMode.ForRead, false, true) as Polyline;
-            if (pl == null)
+            var ent = idEnt.GetObject(OpenMode.ForRead, false, true);
+
+            if (ent is Polyline)
             {
-                Inspector.AddError($"Неподдерживаемый тип объекта - {idEnt.ObjectClass.Name}. Классификатор - {tag}",
-                    idEnt, System.Drawing.SystemIcons.Error);
+                var pl = ent as Polyline;
+                res = pl.Area * unitFactor;
+            }
+            else if (ent is Hatch)
+            {
+                var h = ent as Hatch;
+                res = h.Area * unitFactor;
             }
             else
             {
-                res = pl.Area * unitFactor;
+                Inspector.AddError($"Неподдерживаемый тип объекта - {idEnt.ObjectClass.Name}. Классификатор - {tag}",
+                        idEnt, System.Drawing.SystemIcons.Error);
             }
+
             return res;
         }
     }

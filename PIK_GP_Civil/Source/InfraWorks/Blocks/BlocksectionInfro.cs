@@ -11,6 +11,7 @@ namespace PIK_GP_Civil.InfraWorks.Blocks
     {
         public const string  BlockNameOrdinary ="ГП_К_Секция_Рядовая";
         public const string  BlockNameAngle ="ГП_К_Секция_Угловая";
+        public const string BlockNameTower = "ГП_К_Секция_Башня";
         public int Height;
 
         public BlockSectionInfro (string blName, BlockReference blRef) : base(blRef, blName)
