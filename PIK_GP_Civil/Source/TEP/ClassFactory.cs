@@ -42,7 +42,7 @@ namespace PIK_GP_Civil.TEP
                     res = new Classificator("Участок адм-деловой зоны", 2, "га", value);
                 }
             }
-            Inspector.AddError($"Класс: {res.Name}", idEnt, System.Drawing.SystemIcons.Information);
+            //Inspector.AddError($"Класс: {res.Name}", idEnt, System.Drawing.SystemIcons.Information);
             return res;
         }
 

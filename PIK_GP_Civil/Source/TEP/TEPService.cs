@@ -4,6 +4,7 @@ using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AcadLib.Errors;
 using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.EditorInput;
@@ -69,9 +70,8 @@ namespace PIK_GP_Civil.TEP
                             classificators.Add(classificator);
                         }
                     }
-                    catch (Exception ex)
-                    {
-                        
+                    catch
+                    {                        
                     }
                 }
                 t.Commit();
