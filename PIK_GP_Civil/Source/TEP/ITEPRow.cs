@@ -8,8 +8,9 @@ namespace PIK_GP_Civil.TEP
 {
     public interface ITEPRow
     {
-        string Name { get; set; }
-        string Units { get; set; }
-        double Value { get; set; }
+        string Name { get;  }
+        string Units { get;  }
+        double Value { get;  }
+        ClassType ClassType { get; }
     }
 }

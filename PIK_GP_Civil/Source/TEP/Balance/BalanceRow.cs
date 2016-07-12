@@ -4,22 +4,25 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PIK_GP_Civil.TEP
+namespace PIK_GP_Civil.TEP.Balance
 {
-    public class TEPRow: ITEPRow
+    class BalanceRow : ITEPRow
     {
-        private List<IClassificator> items;        
-        
+        List<IClassificator> items;       
+
+        public ClassType ClassType { get; set; }
         public string Name { get; set; }
         public string Units { get; set; }
         public double Value { get; set; }
+        public double PercentTerritory { get; set; }
 
-        public TEPRow (string key, List<IClassificator> items)
+        public BalanceRow (List<IClassificator> items)
         {
-            Name = key;
             this.items = items;
             var first = items.First();
-            Units = first.Units;
+            ClassType = first.ClassType;
+            Name = first.ClassType.TableName;
+            Units = first.ClassType.Units;
             Value = items.Sum(i => i.Value);
         }
     }

@@ -11,38 +11,13 @@ namespace PIK_GP_Civil.TEP
 {
     public static class ClassFactory
     {
-        const string LandBoundary = "Граница участка";
-        const string EcoSystem = "Природный комплекс";
-        const string BusinesZone = "Административно-деловая";
-
-        public static IClassificator Create (ObjectId idEnt, StringCollection tags, StringCollection schemas)
+        public static IClassificator Create (ObjectId idEnt, StringCollection tags, StringCollection schemas, ITableService ts)
         {
-            Classificator res = null;            
-            if (tags.Contains(LandBoundary))
-            {                
-                double value = GetValue(idEnt, 0.0001, LandBoundary);
-                if (value != 0)
-                {
-                    res = new Classificator("Площадь участка", 0, "га", value);
-                }
-            }
-            else if (tags.Contains(EcoSystem))
-            {
-                double value = GetValue(idEnt, 0.0001, EcoSystem);
-                if (value != 0)
-                {
-                    res = new Classificator("Участок ПК", 1, "га", value);
-                }
-            }
-            else if (tags.Contains(BusinesZone))
-            {
-                double value = GetValue(idEnt, 0.0001, BusinesZone);
-                if (value != 0)
-                {
-                    res = new Classificator("Участок адм-деловой зоны", 2, "га", value);
-                }
-            }
-            //Inspector.AddError($"Класс: {res.Name}", idEnt, System.Drawing.SystemIcons.Information);
+            var classType = ts.GetClassType(tags);
+            if (classType == null) return null;
+            double value = GetValue(idEnt, 0.0001, classType.ClassName);
+            Classificator res = new Classificator(idEnt, classType, value);
+                        
             return res;
         }
 
@@ -51,10 +26,10 @@ namespace PIK_GP_Civil.TEP
             double res = 0;
             var ent = idEnt.GetObject(OpenMode.ForRead, false, true);
 
-            if (ent is Polyline)
+            if (ent is Curve)
             {
-                var pl = ent as Polyline;
-                res = pl.Area * unitFactor;
+                var curve = ent as Curve;
+                res = curve.Area * unitFactor;
             }
             else if (ent is Hatch)
             {

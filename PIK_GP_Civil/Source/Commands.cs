@@ -79,12 +79,13 @@ namespace PIK_GP_Civil
             });
         }
 
-        [CommandMethod(Group, nameof(GP_Civil_TEP), CommandFlags.Modal)]
-        public static void GP_Civil_TEP ()
+        [CommandMethod(Group, nameof(GP_TEP_Balance), CommandFlags.Modal)]
+        public static void GP_TEP_Balance ()
         {
             CommandStart.Start(doc =>
             {
-                TEP.TEPService tep = new TEP.TEPService (doc);
+                TEP.Balance.BalanceService balanceServ = new TEP.Balance.BalanceService(doc.Database);
+                TEP.TEPService tep = new TEP.TEPService (doc, balanceServ);
                 tep.Calc();
             });
         }

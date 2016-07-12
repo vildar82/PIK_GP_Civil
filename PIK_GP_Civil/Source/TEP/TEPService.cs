@@ -8,23 +8,29 @@ using AcadLib.Errors;
 using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.EditorInput;
+using Autodesk.AutoCAD.Runtime;
 using Autodesk.Gis.Map;
 
 namespace PIK_GP_Civil.TEP
 {
     public class TEPService
     {
+        static RXClass RXClassCurve = RXClass.GetClass(typeof(Curve));
+        static RXClass RXClassHatch = RXClass.GetClass(typeof(Hatch));
+
         Document doc;
         Database db;
         Editor ed;
+        ITableService ts;
 
         public MapApplication MapApp { get { return HostMapApplicationServices.Application; } }
 
-        public TEPService(Document doc)
+        public TEPService(Document doc, ITableService tableService)
         {
             this.doc = doc;
             db = doc.Database;
             ed = doc.Editor;
+            this.ts = tableService;
         }
 
         public void Calc ()
@@ -32,23 +38,16 @@ namespace PIK_GP_Civil.TEP
             var sel = ed.Select("\nВыбор:");
             var classifivators = GetClassificators(sel);
             // Группировка и суммирование
-            var data = GetData(classifivators);
-            // Таблица
-            TableService ts = new TableService (doc);
-            ts.Create(data);
+            CalcData(classifivators);
+            // Таблица            
+            var table = ts.Create();
+            ts.Insert(table, doc);
         }
 
-        private List<ITEPRow> GetData (List<IClassificator> classifivators)
+        private void CalcData (List<IClassificator> classificators)
         {
-            List<ITEPRow> data = new List<ITEPRow> ();
-
-            var groups = classifivators.GroupBy(g=>g.Name).OrderBy(o=>o.First().Index);
-            foreach (var item in groups)
-            {
-                TEPRow row = new TEPRow (item.Key, item.ToList());
-                data.Add(row);
-            }
-            return data;
+            var groups = classificators.GroupBy(g=>g.ClassType.TableName).OrderBy(o=>o.First().ClassType.Index).ToList();
+            ts.CalcRows(groups);                        
         }
 
         private List<IClassificator> GetClassificators (List<ObjectId> ids)
@@ -59,6 +58,12 @@ namespace PIK_GP_Civil.TEP
                 var map = MapApp.ActiveProject;
                 foreach (var idEnt in ids)
                 {
+                    if (!idEnt.ObjectClass.IsDerivedFrom(RXClassCurve) && 
+                        idEnt.ObjectClass != RXClassHatch)
+                    {
+                        continue;
+                    }
+                    
                     try
                     {
                         var tags = new StringCollection ();
@@ -66,12 +71,20 @@ namespace PIK_GP_Civil.TEP
                         map.ClassificationManager.GetAllTags(ref tags, ref schemas, idEnt);
                         if (tags.Count != 0)
                         {
-                            var classificator = ClassFactory.Create(idEnt, tags, schemas);
-                            classificators.Add(classificator);
+                            var classificator = ClassFactory.Create(idEnt, tags, schemas, ts);
+                            if (classificator == null)
+                            { 
+                                Inspector.AddError($"Пропущен объект класса - {string.Join(",", tags)}", idEnt, System.Drawing.SystemIcons.Warning);
+                            }
+                            else
+                            {
+                                classificators.Add(classificator);
+                            }                            
                         }
                     }
                     catch
-                    {                        
+                    {
+                        //GetAllTags кидает исключение                   
                     }
                 }
                 t.Commit();
