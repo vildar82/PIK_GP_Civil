@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Autodesk.AutoCAD.DatabaseServices;
 
-namespace PIK_GP_Civil.TEP
+namespace PIK_GP_Civil.FCS
 {
     public interface IClassificator
     {

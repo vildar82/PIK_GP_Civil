@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using AcadLib.Errors;
 using Autodesk.AutoCAD.DatabaseServices;
 
-namespace PIK_GP_Civil.TEP
+namespace PIK_GP_Civil.FCS
 {
     public static class ClassFactory
     {
@@ -15,7 +15,7 @@ namespace PIK_GP_Civil.TEP
         {
             var classType = ts.GetClassType(tags);
             if (classType == null) return null;
-            double value = GetValue(idEnt, 0.0001, classType.ClassName);
+            double value = GetValue(idEnt, classType.UnitFactor, classType.ClassName);
             Classificator res = new Classificator(idEnt, classType, value);
                         
             return res;

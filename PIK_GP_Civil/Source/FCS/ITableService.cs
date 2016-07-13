@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using AcadLib.Tables;
 
-namespace PIK_GP_Civil.TEP
+namespace PIK_GP_Civil.FCS
 {
     /// <summary>
     /// Таблица ТЕПов

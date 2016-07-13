@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PIK_GP_Civil.TEP
+namespace PIK_GP_Civil.FCS
 {
     /// <summary>
     /// Тип классификатора
@@ -22,14 +22,17 @@ namespace PIK_GP_Civil.TEP
         public ClassGroup Group { get; set; }
         public int Index { get; set; }
         public string Units { get; set; }
+        public double UnitFactor { get; set; }
 
-        public ClassType(string className, string tableName, ClassGroup group, int index, string units)
+        public ClassType(string className, string tableName, ClassGroup group, int index,
+            string units = "м" + AcadLib.General.Symbols.Square, double unitFactor =1 )
         {
             ClassName = className;
             TableName = tableName;
             Group = group;
             Index = index;
             Units = units;
+            UnitFactor = unitFactor;
         }
     }
 }

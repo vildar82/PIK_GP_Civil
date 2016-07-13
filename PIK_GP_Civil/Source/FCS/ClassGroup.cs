@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PIK_GP_Civil.TEP
+namespace PIK_GP_Civil.FCS
 {
     public class ClassGroup
     {

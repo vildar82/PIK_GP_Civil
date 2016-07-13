@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PIK_GP_Civil.TEP.Balance
+namespace PIK_GP_Civil.FCS.Balance
 {
-    class BalanceRow : ITEPRow
+    class BalanceRow : IFCRow
     {
         List<IClassificator> items;       
 

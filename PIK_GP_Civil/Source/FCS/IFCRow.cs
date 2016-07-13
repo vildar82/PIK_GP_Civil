@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PIK_GP_Civil.TEP
+namespace PIK_GP_Civil.FCS
 {
-    public interface ITEPRow
+    public interface IFCRow
     {
         string Name { get;  }
         string Units { get;  }

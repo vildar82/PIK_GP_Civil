@@ -11,9 +11,9 @@ using Autodesk.AutoCAD.EditorInput;
 using Autodesk.AutoCAD.Runtime;
 using Autodesk.Gis.Map;
 
-namespace PIK_GP_Civil.TEP
+namespace PIK_GP_Civil.FCS
 {
-    public class TEPService
+    public class FCService
     {
         static RXClass RXClassCurve = RXClass.GetClass(typeof(Curve));
         static RXClass RXClassHatch = RXClass.GetClass(typeof(Hatch));
@@ -25,7 +25,7 @@ namespace PIK_GP_Civil.TEP
 
         public MapApplication MapApp { get { return HostMapApplicationServices.Application; } }
 
-        public TEPService(Document doc, ITableService tableService)
+        public FCService(Document doc, ITableService tableService)
         {
             this.doc = doc;
             db = doc.Database;
