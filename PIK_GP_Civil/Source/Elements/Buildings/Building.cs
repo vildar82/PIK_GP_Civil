@@ -19,13 +19,7 @@ namespace PIK_GP_Civil.Elements.Buildings
         public Extents3d ExtentsInModel { get; set; }
         public Polyline Contour { get; set; }
         public List<FCProperty> FCProperties { get; set; }
-        public int Height { get; set; }
-
-        //public virtual Polyline GetContour ()
-        //{
-        //    var curve = IdEnt.GetObject(OpenMode.ForRead, false, true) as Polyline;
-        //    return curve;
-        //}
+        public int Height { get; set; }       
 
         public Building (Polyline pl, int floors, List<FCProperty> props)
         {
@@ -34,7 +28,21 @@ namespace PIK_GP_Civil.Elements.Buildings
             Contour = pl;
             Floors = floors;
             FCProperties = props;
-            Height = floors * 3 + 3;
+            Height = GetGeight(Floors);
+        }
+
+        private int GetGeight (int floors)
+        {
+            int h = 0;
+            if (floors == 0)
+            {
+                h = floors * 3 + 3;
+            }
+            else
+            {
+                h = 9 * 3 + 3;
+            }
+            return h;
         }
     }
 }

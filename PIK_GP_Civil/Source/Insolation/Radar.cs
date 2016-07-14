@@ -51,9 +51,14 @@ namespace PIK_GP_Civil.Insolation
             Vector2d vecRay = Vector2d.XAxis;
             vecRay.RotateBy(rule.StartAngle.ToRadians());
 
+            // Test
+            List<Point3d> ptsEdge = new List<Point3d>();
+
             for (double i = 0; i < countLargeStep; i += options.ScaningStepLarge)
             {
-                using (Line ray = new Line(ptScan, rule.GetPointByHeightInVector(ptScan, vecRay, options.MaxHeight)))
+                var ptScanEnd = rule.GetPointByHeightInVector(ptScan, vecRay, options.MaxHeight);
+                ptsEdge.Add(ptScanEnd);
+                using (Line ray = new Line(ptScan, ptScanEnd))
                 {
                     ptEndScanPoint = ray.EndPoint;
                     Point3d ptFound;
@@ -101,6 +106,12 @@ namespace PIK_GP_Civil.Insolation
                 illuminations.Add(illumArea);
             }
 
+            // Test 
+            Polyline3d pl3dEdge = new Polyline3d(Poly3dType.SimplePoly, new Point3dCollection(ptsEdge.ToArray()), false);
+            var cs = db.CurrentSpaceId.GetObject(OpenMode.ForWrite) as BlockTableRecord;
+            cs.AppendEntity(pl3dEdge);
+            db.TransactionManager.TopTransaction.AddNewlyCreatedDBObject(pl3dEdge, true);
+
             return illuminations;
         }        
 
@@ -129,20 +140,23 @@ namespace PIK_GP_Civil.Insolation
                         // Проверка высоты точки и здания
                         var heightPoint = rule.GetHeightAtPoint(ptNearest, ray.StartPoint);
                         var heightBuilding = build.Height;
-
-                        if (findRes)
+                        // Если высота дома выше высоты инсоляции в этой точки, то добаляем точку в найденные
+                        if (heightBuilding >= heightPoint)
                         {
-                            if ((ptIntersectNearest - ray.StartPoint).Length > (ptNearest - ray.StartPoint).Length)
+                            if (findRes)
+                            {
+                                if ((ptIntersectNearest - ray.StartPoint).Length > (ptNearest - ray.StartPoint).Length)
+                                {
+                                    ptIntersectNearest = ptNearest;
+                                }
+
+                            }
+                            else
                             {
                                 ptIntersectNearest = ptNearest;
                             }
-
+                            findRes = true;
                         }
-                        else
-                        {
-                            ptIntersectNearest = ptNearest;
-                        }
-                        findRes = true;
                     }                    
                 }
             }
@@ -209,6 +223,7 @@ namespace PIK_GP_Civil.Insolation
             ptNearest = Point3d.Origin;
             var ptsArray = new Point3d[pts.Count];
             pts.CopyTo(ptsArray, 0);
+            // Минимальное расстояние до центра (точки сканирования) > 5м.
             var find = ptsArray.Select(p=>new { point = p, length = (p - ptDest).Length }).OrderBy(p => p.length).First(p=>p.length>5);
             if (find != null)
             {

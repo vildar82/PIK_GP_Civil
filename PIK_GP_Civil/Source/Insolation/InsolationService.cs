@@ -38,21 +38,16 @@ namespace PIK_GP_Civil.Insolation
             var scope = map.GetScope(pt);
             // радар
             var res = radar.Scan(pt, scope, ms);
-
             // Построение зон освещенности
             cretateIllumAreas(res);
         }
 
         private void cretateIllumAreas (List<IlluminationArea> res)
         {
-            using (var t = db.TransactionManager.StartTransaction())
+            var cs = db.CurrentSpaceId.GetObject(OpenMode.ForWrite) as BlockTableRecord;
+            foreach (var illum in res)
             {
-                var cs = db.CurrentSpaceId.GetObject(OpenMode.ForWrite) as BlockTableRecord;
-                foreach (var illum in res)
-                {
-                    illum.Create(cs, t);                                  
-                }
-                t.Commit();
+                illum.Create(cs);
             }
         }
     }

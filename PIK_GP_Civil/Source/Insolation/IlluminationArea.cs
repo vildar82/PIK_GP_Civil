@@ -34,8 +34,9 @@ namespace PIK_GP_Civil.Insolation
         /// <summary>
         /// Построение контура освещенности
         /// </summary>        
-        public void Create (BlockTableRecord cs, Transaction t)
+        public void Create (BlockTableRecord cs)
         {
+            Transaction t = cs.Database.TransactionManager.TopTransaction;
             Point3dCollection pts = new Point3dCollection(new Point3d[] { Origin, StartPoint, EndPoint });
             Polyline3d pl3d = new Polyline3d(Poly3dType.SimplePoly, pts, true);
             cs.AppendEntity(pl3d);
