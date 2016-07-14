@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using AcadLib;
 using AcadLib.PaletteCommands;
+using Autodesk.AutoCAD.EditorInput;
 using Autodesk.AutoCAD.Runtime;
 using Autodesk.Civil.ApplicationServices;
 using PIK_GP_Civil.Properties;
@@ -87,6 +88,21 @@ namespace PIK_GP_Civil
                 FCS.Balance.BalanceService balanceServ = new FCS.Balance.BalanceService(doc.Database);
                 FCS.FCService tep = new FCS.FCService (doc, balanceServ);
                 tep.Calc();
+            });
+        }
+
+        [CommandMethod(Group, nameof(KP_InsolationPoint), CommandFlags.Modal)]
+        public void KP_InsolationPoint ()
+        {
+            CommandStart.Start(doc =>
+            {
+                using (var t = doc.TransactionManager.StartTransaction())
+                {
+                    var inso = new Insolation.InsolationService(doc.Database, new Insolation.MoscowOptions());
+                    var pt = doc.Editor.GetPointWCS("\nУкажите точку:");
+                    inso.CalcPoint(pt);
+                    t.Commit();
+                }
             });
         }
 

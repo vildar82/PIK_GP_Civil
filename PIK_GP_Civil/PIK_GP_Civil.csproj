@@ -73,6 +73,7 @@
       <HintPath>..\..\PIK_GP_Acad\PIK_GP_Acad\bin\Release\PIK_GP_Acad.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -93,6 +94,7 @@
     </Compile>
     <Compile Include="Source\Commands.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Source\FCS\FCProperty.cs" />
     <Compile Include="Source\InfraWorks\Blocks\SchoolInfro.cs" />
     <Compile Include="Source\InfraWorks\Blocks\ParkingInfro.cs" />
     <Compile Include="Source\InfraWorks\Blocks\KindergartenInfro.cs" />
@@ -102,6 +104,19 @@
     <Compile Include="Source\InfraWorks\ExportService.cs" />
     <Compile Include="Source\InfraWorks\ODs\ODCoverage.cs" />
     <Compile Include="Source\InfraWorks\ODs\ODBuilding.cs" />
+    <Compile Include="Source\Insolation\Constructions\Building.cs" />
+    <Compile Include="Source\Insolation\Constructions\BuildingFactory.cs" />
+    <Compile Include="Source\Insolation\Constructions\IBuilding.cs" />
+    <Compile Include="Source\Insolation\Constructions\Surround.cs" />
+    <Compile Include="Source\Insolation\IlluminationArea.cs" />
+    <Compile Include="Source\Insolation\InsolationService.cs" />
+    <Compile Include="Source\Insolation\Map.cs" />
+    <Compile Include="Source\Insolation\MoscowOptions.cs" />
+    <Compile Include="Source\Insolation\Options.cs" />
+    <Compile Include="Source\Insolation\Radar.cs" />
+    <Compile Include="Source\Insolation\Scope.cs" />
+    <Compile Include="Source\Insolation\SunlightRule\ISunlightRule.cs" />
+    <Compile Include="Source\Insolation\SunlightRule\SimpleRule.cs" />
     <Compile Include="Source\Kadastr\KadastrService.cs" />
     <Compile Include="Source\Lib\OD\ODParameter.cs" />
     <Compile Include="Source\Lib\OD\ODService.cs" />

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
@@ -10,6 +11,8 @@ using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.EditorInput;
 using Autodesk.AutoCAD.Runtime;
 using Autodesk.Gis.Map;
+using Autodesk.Gis.Map.Classification;
+using Autodesk.Gis.Map.Project;
 
 namespace PIK_GP_Civil.FCS
 {
@@ -23,14 +26,14 @@ namespace PIK_GP_Civil.FCS
         Editor ed;
         ITableService ts;
 
-        public MapApplication MapApp { get { return HostMapApplicationServices.Application; } }
+        public static MapApplication MapApp { get { return HostMapApplicationServices.Application; } }
 
         public FCService(Document doc, ITableService tableService)
         {
             this.doc = doc;
             db = doc.Database;
             ed = doc.Editor;
-            this.ts = tableService;
+            this.ts = tableService;            
         }
 
         public void Calc ()
@@ -54,8 +57,7 @@ namespace PIK_GP_Civil.FCS
         {
             List<IClassificator> classificators = new List<IClassificator> ();
             using (var t = db.TransactionManager.StartTransaction())
-            {
-                var map = MapApp.ActiveProject;
+            {                
                 foreach (var idEnt in ids)
                 {
                     if (!idEnt.ObjectClass.IsDerivedFrom(RXClassCurve) && 
@@ -66,20 +68,19 @@ namespace PIK_GP_Civil.FCS
                     
                     try
                     {
-                        var tags = new StringCollection ();
-                        var schemas = new StringCollection ();
-                        map.ClassificationManager.GetAllTags(ref tags, ref schemas, idEnt);
+                        var tags = new StringCollection();                        
+                        GetAllTags(idEnt, ref tags);
                         if (tags.Count != 0)
                         {
-                            var classificator = ClassFactory.Create(idEnt, tags, schemas, ts);
+                            var classificator = ClassFactory.Create(idEnt, tags, ts);
                             if (classificator == null)
-                            { 
+                            {
                                 Inspector.AddError($"Пропущен объект класса - {string.Join(",", tags)}", idEnt, System.Drawing.SystemIcons.Warning);
                             }
                             else
                             {
                                 classificators.Add(classificator);
-                            }                            
+                            }
                         }
                     }
                     catch
@@ -90,6 +91,21 @@ namespace PIK_GP_Civil.FCS
                 t.Commit();
             }
             return classificators;
+        }
+
+        public static void GetAllTags (ObjectId idEnt, ref StringCollection tags)
+        {
+            StringCollection schemas = new StringCollection();
+            MapApp.ActiveProject.ClassificationManager.GetAllTags(ref tags, ref schemas, idEnt);
+        }
+
+        public static List<FCProperty> GetProperties (ObjectId idEnt)
+        {
+            FeatureClassPropertyCollection props = new FeatureClassPropertyCollection();
+            ArrayList values = new ArrayList();
+            MapApp.ActiveProject.ClassificationManager.GetProperties(props, values, idEnt);
+            List<FCProperty> res = FCProperty.GetProperties(props, values);
+            return res;
         }
     }
 }

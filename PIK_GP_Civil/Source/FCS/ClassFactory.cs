@@ -11,13 +11,16 @@ namespace PIK_GP_Civil.FCS
 {
     public static class ClassFactory
     {
-        public static IClassificator Create (ObjectId idEnt, StringCollection tags, StringCollection schemas, ITableService ts)
+        public static IClassificator Create (ObjectId idEnt, StringCollection tags, ITableService ts)
         {
+            Classificator res = null;
             var classType = ts.GetClassType(tags);
             if (classType == null) return null;
             double value = GetValue(idEnt, classType.UnitFactor, classType.ClassName);
-            Classificator res = new Classificator(idEnt, classType, value);
-                        
+            if (value != 0)
+            {
+                res = new Classificator(idEnt, classType, value);
+            }                        
             return res;
         }
 
@@ -40,6 +43,10 @@ namespace PIK_GP_Civil.FCS
             {
                 Inspector.AddError($"Неподдерживаемый тип объекта - {idEnt.ObjectClass.Name}. Классификатор - {tag}",
                         idEnt, System.Drawing.SystemIcons.Error);
+            }
+            if (res == 0)
+            {
+                Inspector.AddError($"Не определена площадь объекта", idEnt, System.Drawing.SystemIcons.Error);
             }
 
             return res;
