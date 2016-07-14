@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Autodesk.AutoCAD.Colors;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.Geometry;
-using PIK_GP_Civil.Insolation.Constructions;
+using PIK_GP_Civil.Elements;
 using PIK_GP_Civil.Insolation.SunlightRule;
 
 namespace PIK_GP_Civil.Insolation

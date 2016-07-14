@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.Geometry;
 
-namespace PIK_GP_Civil.Insolation.Constructions
+namespace PIK_GP_Civil.Elements.Buildings
 {
     /// <summary>
     /// Здание
@@ -16,6 +16,7 @@ namespace PIK_GP_Civil.Insolation.Constructions
         int Floors { get; }
         Extents3d ExtentsInModel { get; }
         Polyline Contour { get; }
+        int Height { get; set; }
 
         //Polyline GetContour ();
     }

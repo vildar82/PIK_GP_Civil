@@ -4,8 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Autodesk.AutoCAD.DatabaseServices;
+using PIK_GP_Civil.InfraWorks;
+using PIK_GP_Civil.InfraWorks.ODs;
 
-namespace PIK_GP_Civil.InfraWorks.Blocks
+namespace PIK_GP_Civil.Elements.Blocks
 {
     public class BlockSectionInfro : PIK_GP_Acad.KP.KP_BlockSection.BlockSection, IInfrastructure
     {
@@ -25,7 +27,7 @@ namespace PIK_GP_Civil.InfraWorks.Blocks
             // Определение полилинии контура и копирование в модель
             var pl = ExportService.GetPls(blRef.BlockTableRecord, PIK_GP_Acad.KP.KP_BlockSection.KP_BlockSectionService.blKpParkingLayerAxisContour).First();
             var idPlbuilding = ExportService.CopyPl(model, blRef, pl);
-            ODs.ODBuilding od = new ODs.ODBuilding (ODs.BuildingType.Live, Height);
+            ODBuilding od = new ODBuilding (BuildingType.Live, Height);
             od.AddRecord(idPlbuilding);
         }
     }

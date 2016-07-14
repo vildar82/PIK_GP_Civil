@@ -4,8 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Autodesk.AutoCAD.DatabaseServices;
+using PIK_GP_Civil.InfraWorks;
+using PIK_GP_Civil.InfraWorks.ODs;
 
-namespace PIK_GP_Civil.InfraWorks.Blocks
+namespace PIK_GP_Civil.Elements.Blocks
 {
     public class KindergartenInfro : PIK_GP_Acad.KP.Social.KindergartenBlock, IInfrastructure
     {
@@ -25,7 +27,7 @@ namespace PIK_GP_Civil.InfraWorks.Blocks
             // Определение полилинии контура и копирование в модель
             var pl = ExportService.GetPls(blRef.BlockTableRecord, LayerBuilding).First();
             var idPlbuilding = ExportService.CopyPl(model, blRef, pl);
-            ODs.ODBuilding od = new ODs.ODBuilding (ODs.BuildingType.Social, Height);
+            ODBuilding od = new ODBuilding (BuildingType.Social, Height);
             od.AddRecord(idPlbuilding);
 
             // определение полилиний покрытия
@@ -33,7 +35,7 @@ namespace PIK_GP_Civil.InfraWorks.Blocks
             foreach (var item in pls)
             {
                 var idPlCoverage = ExportService.CopyPl(model, blRef, item);
-                ODs.ODCoverage odCov = new ODs.ODCoverage (ODs.CoverageType.SideWalk);
+                ODCoverage odCov = new ODCoverage (CoverageType.SideWalk);
                 odCov.AddRecord(idPlCoverage);
             }            
         }

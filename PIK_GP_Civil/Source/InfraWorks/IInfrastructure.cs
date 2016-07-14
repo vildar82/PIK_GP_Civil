@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Autodesk.AutoCAD.DatabaseServices;
 
-namespace PIK_GP_Civil.InfraWorks.Blocks
+namespace PIK_GP_Civil.InfraWorks
 {
     /// <summary>
     /// Блок инфраструктуры для экспорта в InfraWorks

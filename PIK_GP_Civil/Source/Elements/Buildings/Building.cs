@@ -7,7 +7,7 @@ using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.Geometry;
 using PIK_GP_Civil.FCS;
 
-namespace PIK_GP_Civil.Insolation.Constructions
+namespace PIK_GP_Civil.Elements.Buildings
 {
     /// <summary>
     /// Здание - по контуру полилинии
@@ -19,6 +19,7 @@ namespace PIK_GP_Civil.Insolation.Constructions
         public Extents3d ExtentsInModel { get; set; }
         public Polyline Contour { get; set; }
         public List<FCProperty> FCProperties { get; set; }
+        public int Height { get; set; }
 
         //public virtual Polyline GetContour ()
         //{
@@ -33,6 +34,7 @@ namespace PIK_GP_Civil.Insolation.Constructions
             Contour = pl;
             Floors = floors;
             FCProperties = props;
+            Height = floors * 3 + 3;
         }
     }
 }

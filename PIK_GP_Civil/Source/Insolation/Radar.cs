@@ -9,7 +9,8 @@ using AcadLib;
 using AcadLib.Geometry;
 using AcadLib.Errors;
 using PIK_GP_Civil.Insolation.SunlightRule;
-using PIK_GP_Civil.Insolation.Constructions;
+using PIK_GP_Civil.Elements;
+using PIK_GP_Civil.Elements.Buildings;
 
 namespace PIK_GP_Civil.Insolation
 {
@@ -58,8 +59,8 @@ namespace PIK_GP_Civil.Insolation
                     Point3d ptFound;
                     if (FindIntersectNearestPiont(buildings, ray, out ptFound))
                     {
-                        ptIntersectNearest = ptFound;
                         // Найдено пересечение луча со зданием
+                        ptIntersectNearest = ptFound;                        
                         if (!scanToStartIllumArea)
                         {
                             // Конец освещенного участка
@@ -72,7 +73,6 @@ namespace PIK_GP_Civil.Insolation
                     else
                     {
                         // Не найдено пересечений
-
                         if (scanToStartIllumArea)
                         {
                             // Начало освещенного участка
@@ -112,7 +112,7 @@ namespace PIK_GP_Civil.Insolation
             ray.TransformBy(Matrix3d.Rotation(-angle.ToRadians(), Vector3d.ZAxis, ray.StartPoint));
         }
 
-        private static bool FindIntersectNearestPiont (IEnumerable<IBuilding> buildings, Line ray, 
+        private bool FindIntersectNearestPiont (IEnumerable<IBuilding> buildings, Line ray, 
             out Point3d ptIntersectNearest)
         {
             bool findRes = false;
@@ -126,6 +126,10 @@ namespace PIK_GP_Civil.Insolation
                     Point3d ptNearest;
                     if (NearestPoint(ptIntersects, ray.StartPoint, out ptNearest))
                     {
+                        // Проверка высоты точки и здания
+                        var heightPoint = rule.GetHeightAtPoint(ptNearest, ray.StartPoint);
+                        var heightBuilding = build.Height;
+
                         if (findRes)
                         {
                             if ((ptIntersectNearest - ray.StartPoint).Length > (ptNearest - ray.StartPoint).Length)

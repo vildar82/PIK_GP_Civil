@@ -5,10 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 using AcadLib.Errors;
 using Autodesk.AutoCAD.DatabaseServices;
-using PIK_GP_Acad.Insolation.Constructions;
 using PIK_GP_Civil.FCS;
 
-namespace PIK_GP_Civil.Insolation.Constructions
+namespace PIK_GP_Civil.Elements.Buildings
 {
     /// <summary>
     /// Создание зданий
@@ -26,12 +25,7 @@ namespace PIK_GP_Civil.Insolation.Constructions
                 if (floors !=0)
                 {
                     res = new Surround(pl, floors, props);
-                }
-                //var layer = pl.Layer.ToUpper();
-                //if (layer.Contains("ОКРУЖАЮЩАЯ") && layer.Contains("ЗАСТРОЙКА"))
-                //{
-                //    res = new Surround(pl);
-                //}
+                }                
             }
             return res;
         }

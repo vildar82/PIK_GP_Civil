@@ -7,7 +7,7 @@ using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.Geometry;
 using PIK_GP_Civil.FCS;
 
-namespace PIK_GP_Civil.Insolation.Constructions
+namespace PIK_GP_Civil.Elements.Buildings
 {
     /// <summary>
     ///  Окружающая застройка

@@ -7,7 +7,6 @@ using AcadLib;
 using AcadLib.Errors;
 using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.DatabaseServices;
-using PIK_GP_Civil.InfraWorks.Blocks;
 using PIK_GP_Civil.Lib.OD;
 
 namespace PIK_GP_Civil.InfraWorks
@@ -30,16 +29,15 @@ namespace PIK_GP_Civil.InfraWorks
                 // трансляция старого слоя контура в блоках блок-секций на новый слой.
                 PIK_GP_Acad.KP.KP_BlockSection.KP_BlockSectionService.TransferLayerPlContours(db);
 
-                foreach (var item in cs)
+                foreach (var idEnt in cs)
                 {
-                    var blRef = item.GetObject( OpenMode.ForRead, false, true) as BlockReference;
-                    if (blRef == null) continue;
-                    var blName = blRef.GetEffectiveName();
+                    var ent = idEnt.GetObject(OpenMode.ForRead) as Entity;
+                    if (ent == null) continue;                    
 
                     // Определение объекта инфраструктуры
                     try
                     {
-                        var infroBlock = InfrastructureFactory.Create(blName, blRef);
+                        var infroBlock = InfrastructureFactory.Create(ent);
                         if (infroBlock != null)
                         {
                             infroBlock.Export(cs);
@@ -47,7 +45,7 @@ namespace PIK_GP_Civil.InfraWorks
                     }
                     catch (Exception ex)
                     {
-                        Inspector.AddError($"Ошибка определения блока '{blName}' - {ex.Message}");
+                        Inspector.AddError($"Ошибка определения объекта - {ex.Message}", idEnt, System.Drawing.SystemIcons.Error);
                     }
                 }
                 t.Commit();

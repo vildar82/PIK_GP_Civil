@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AcadLib;
 using Autodesk.AutoCAD.Geometry;
 
 namespace PIK_GP_Civil.Insolation.SunlightRule
@@ -43,13 +44,20 @@ namespace PIK_GP_Civil.Insolation.SunlightRule
 
         public Point3d GetPointByHeightInVector (Point3d ptOrigin, Vector2d vec, int height)
         {
-            Point3d ptRes = Point3d.Origin;
+            Point2d ptRes = Point2d.Origin;
 
             var len = GetLength(height);
             var vecHeight = new Vector2d(0, -len);
-            var vecHeightProjection = vecHeight.GetPerpendicularVector();            
+            var vecHeightProjection = vecHeight.GetPerpendicularVector();
 
-            return ptRes;
+            var angleToHeight = vecHeight.GetAngleTo(vec);
+
+            var a = len * Math.Tan(angleToHeight);
+
+            ptRes = ptOrigin.Convert2d() + vecHeight;
+            ptRes = ptRes + vecHeightProjection * a;
+
+            return ptRes.Convert3d();
         }
     }
 }

@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 using AcadLib.RTree.SpatialIndex;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.Geometry;
-using PIK_GP_Civil.Insolation.Constructions;
+using PIK_GP_Civil.Elements;
+using PIK_GP_Civil.Elements.Buildings;
 
 namespace PIK_GP_Civil.Insolation
 {    
