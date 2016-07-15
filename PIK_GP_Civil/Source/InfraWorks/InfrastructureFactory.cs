@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Autodesk.AutoCAD.DatabaseServices;
 using PIK_GP_Civil.Elements;
+using PIK_GP_Civil.Elements.Blocks;
 
 namespace PIK_GP_Civil.InfraWorks
 {
@@ -13,6 +14,16 @@ namespace PIK_GP_Civil.InfraWorks
     /// </summary>
     public static class InfrastructureFactory
     {
+        public static Dictionary<string, Type> BlockTypes = new Dictionary<string, Type>()
+            {
+                { BlockSectionInfro.BlockNameOrdinary, typeof(BlockSectionInfro) },
+                { BlockSectionInfro.BlockNameAngle, typeof(BlockSectionInfro) },
+                { BlockSectionInfro.BlockNameTower, typeof(BlockSectionInfro) },
+                { KindergartenInfro.BlockName, typeof(KindergartenInfro) },
+                { SchoolInfro.BlockName, typeof(SchoolInfro) },
+                { ParkingInfro.BlockName, typeof(ParkingInfro) }
+            };
+
         public static IInfrastructure Create (Entity ent)
         {
             IInfrastructure res = null;
@@ -21,7 +32,7 @@ namespace PIK_GP_Civil.InfraWorks
             {
                 var blRef = (BlockReference)ent;
                 string blName = blRef.GetEffectiveName();
-                if (ElementsTypes.BlockTypes.TryGetValue(blName, out typeBlock))
+                if (BlockTypes.TryGetValue(blName, out typeBlock))
                 {
                     res = (IInfrastructure)Activator.CreateInstance(typeBlock, blName, blRef);
                 }                

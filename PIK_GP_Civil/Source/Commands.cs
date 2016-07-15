@@ -38,9 +38,14 @@ namespace PIK_GP_Civil
                 new PaletteCommand("Создание таблицы поворотных точек", Resources.GP_Civil_TutningPointsTable,
                         nameof(GP_Civil_TurningPointTable), "", GroupKP),
                 new PaletteCommand("Экспорт в InfraWorks", Resources.KP_ExportToInfraworks,
-                        nameof(GP_Civil_ExportToInfraWorks), "Копирование контуров полилиний из блоков инфраструктуры (блок-секции, СОШ, ДОО) в модель, для последующего экспорта в InfraWorks.", GroupKP)                
+                        nameof(GP_Civil_ExportToInfraWorks), "Копирование контуров полилиний из блоков инфраструктуры (блок-секции, СОШ, ДОО) в модель, для последующего экспорта в InfraWorks.", 
+                        GroupKP)                
             };
         }
+        //
+        // Концепция
+        //
+        #region Концепция    
 
         [CommandMethod(Group, nameof(GP_Civil_OKSXML), CommandFlags.Modal)]
         public static void GP_Civil_OKSXML()
@@ -79,33 +84,8 @@ namespace PIK_GP_Civil
                 InfraWorks.ExportService.Export(doc);
             });
         }
+        #endregion Концепция
 
-        [CommandMethod(Group, nameof(GP_FCS_Balance), CommandFlags.Modal)]
-        public static void GP_FCS_Balance ()
-        {
-            CommandStart.Start(doc =>
-            {                
-                FCS.FCService tep = new FCS.FCService (doc, 
-                    new FCS.Balance.BalanceTableService(doc.Database), 
-                    new FCS.Balance.BalanceClassService());
-                tep.Calc();
-            });
-        }
-
-        [CommandMethod(Group, nameof(KP_InsolationPoint), CommandFlags.Modal)]
-        public void KP_InsolationPoint ()
-        {
-            CommandStart.Start(doc =>
-            {
-                using (var t = doc.TransactionManager.StartTransaction())
-                {
-                    var inso = new Insolation.InsolationService(doc.Database, new Insolation.MoscowOptions());
-                    var pt = doc.Editor.GetPointWCS("\nУкажите точку:");
-                    inso.CalcPoint(pt);
-                    t.Commit();
-                }
-            });
-        }
 
         public void Initialize()
         {
