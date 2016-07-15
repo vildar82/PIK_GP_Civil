@@ -12,8 +12,7 @@ namespace PIK_GP_Civil.FCS
     /// Таблица ТЕПов
     /// </summary>
     public interface ITableService : ICreateTable
-    {        
-        ClassType GetClassType (StringCollection tags);
+    {   
         /// <summary>
         /// Ссписок объектов сгруппированных по имени в таблице
         /// </summary>        

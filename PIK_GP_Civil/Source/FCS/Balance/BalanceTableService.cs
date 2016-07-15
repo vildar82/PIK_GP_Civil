@@ -11,44 +11,16 @@ using Autodesk.AutoCAD.DatabaseServices;
 
 namespace PIK_GP_Civil.FCS.Balance
 {
-    class BalanceService : CreateTable, ITableService
+    class BalanceTableService : CreateTable, ITableService
     {
-        private const string HomeArea = "Участок дома";
-        static List<ClassType> classTypes = new List<ClassType>() {
-             new ClassType(HomeArea, "Площадь участка дома", null, 0),
-             new ClassType("Размещаемые БРП_ТП", "Площадь размещаемой БРП, ТП", null, 1),
-             new ClassType("Жилые здания", "Площадь застройки дома", null, 2),
-             new ClassType("Общественные здания", "Площадь застройки дома", null, 2),
-             new ClassType("Асфальтобетон", "Площадь проектируемых проездов и автостоянок с покрытием асфальтобетоном", ClassGroup.HardCoating, 3),
-             new ClassType("Тротуарная плитка_Тротуары", "Прощадь проектируемых троутаров с покрытием тротуарной плиткой", ClassGroup.HardCoating, 4),
-             new ClassType("Тротуарная плитка_Тротуары с проездом", "Площадь проектируемых усиленных тротуаров с покрытием тротуарной плиткой с возможностью проезда пожарного автотранспорта", ClassGroup.HardCoating, 5),
-             new ClassType("Газон", "Площадь газонов", ClassGroup.Landscaping, 6),
-             new ClassType("Газон_отмостка", "Площадь отмостки с газонным покрытием", ClassGroup.Landscaping, 7),
-             new ClassType("Гравийные высевки_ДП", "Детские игровые площадки с покрытием гравийными высевками", ClassGroup.Landscaping, 8),
-             new ClassType("Гравийные высевки_ПО", "Площадки отдыха взрослого населения с покрытием гравийными высевками", ClassGroup.Landscaping, 9),
-             new ClassType("Гравийные высевки_ПАО", "Площадка активного отдыха гравийными высевками", ClassGroup.Landscaping, 10),
-             new ClassType("Газонная решетка_Проезд пож.транспорта", "Площадь проездов пожарного автотранспорта с покрытием газонной решеткой", ClassGroup.Landscaping, 11)
-        };
-
         List<BalanceRow> data;
         List<IGrouping<ClassGroup, BalanceRow>> groupsData;
         private Color colorHomeRow = Color.FromRgb(199,200,202);
         private Color colorTotalRow = Color.FromRgb(199, 200, 202);
 
-        public BalanceService (Database db) : base(db)
+        public BalanceTableService (Database db) : base(db)
         {
-        }
-
-        public ClassType GetClassType (StringCollection tags)
-        {
-            foreach (var tag in tags)
-            {
-                var classType = classTypes.Find(c => c.ClassName.Equals(tag, StringComparison.OrdinalIgnoreCase));
-                if (classType != null)
-                    return classType;
-            }
-            return null;
-        }          
+        }       
 
         public void CalcRows (List<IGrouping<string, IClassificator>> groups)
         {
@@ -60,7 +32,7 @@ namespace PIK_GP_Civil.FCS.Balance
             }
 
             // Строка Площади участка дома
-            var homeRow = data.Find(r => r.ClassType.ClassName == HomeArea);
+            var homeRow = data.Find(r => r.ClassType.ClassName == BalanceClassService.HomeArea);
             if (homeRow != null)
             {
                 // Процент остальных площадей
@@ -71,7 +43,7 @@ namespace PIK_GP_Civil.FCS.Balance
             }
             else
             {
-                Inspector.AddError($"Не определен объект класса '{HomeArea}'");
+                Inspector.AddError($"Не определен объект класса '{BalanceClassService.HomeArea}'");
             }
 
             CalcRows();
@@ -159,7 +131,7 @@ namespace PIK_GP_Civil.FCS.Balance
                     cell = table.Cells[row, 3];
                     cell.TextString = itemRow.PercentTerritory.ToString();                    
 
-                    if (itemRow.ClassType.ClassName == HomeArea)
+                    if (itemRow.ClassType.ClassName == BalanceClassService.HomeArea)
                     {
                         table.Rows[row].BackgroundColor = colorHomeRow;
                     }

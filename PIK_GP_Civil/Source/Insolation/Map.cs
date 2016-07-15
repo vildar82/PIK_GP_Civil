@@ -57,11 +57,10 @@ namespace PIK_GP_Civil.Insolation
         public Scope GetScope (Point3d pt)
         {
             int maxHeight = options.MaxHeight;
-            int side = options.SunlightRule.GetLength (maxHeight);
-            Extents3d ext = new Extents3d (new Point3d(pt.X-side, pt.Y-side, 0), new Point3d (pt.X+side, pt.Y, 0));
+            Extents3d ext = options.SunlightRule.GetScanExtents (pt, maxHeight);            
             Rectangle rectScope = new Rectangle(ext);
             var items = rtree.Intersects(rectScope);
-            Scope scope = new Scope (side, ext, items);
+            Scope scope = new Scope (ext, items);
             return scope;
         }
     }

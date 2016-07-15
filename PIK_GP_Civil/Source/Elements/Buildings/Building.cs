@@ -21,14 +21,18 @@ namespace PIK_GP_Civil.Elements.Buildings
         public List<FCProperty> FCProperties { get; set; }
         public int Height { get; set; }       
 
-        public Building (Polyline pl, int floors, List<FCProperty> props)
+        public Building (Polyline pl, List<FCProperty> props)
         {
             IdEnt = pl.Id;
             ExtentsInModel = pl.GeometricExtents;
             Contour = pl;
-            Floors = floors;
             FCProperties = props;
-            Height = GetGeight(Floors);
+            Floors = FCService.GetPropertyValue<int>("Этажность", props, IdEnt, false);
+            Height = FCService.GetPropertyValue<int>("Высота", props, IdEnt, false);
+            if (Height == 0)
+            {
+                Height = GetGeight(Floors);
+            }
         }
 
         private int GetGeight (int floors)
@@ -43,6 +47,6 @@ namespace PIK_GP_Civil.Elements.Buildings
                 h = 9 * 3 + 3;
             }
             return h;
-        }
+        }        
     }
 }

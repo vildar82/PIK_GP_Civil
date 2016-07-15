@@ -11,10 +11,10 @@ namespace PIK_GP_Civil.FCS
 {
     public static class ClassFactory
     {
-        public static IClassificator Create (ObjectId idEnt, StringCollection tags, ITableService ts)
+        public static IClassificator Create (ObjectId idEnt, IEnumerable<string> tags, IClassTypeService classService)
         {
             Classificator res = null;
-            var classType = ts.GetClassType(tags);
+            var classType = classService.GetClassType(tags);
             if (classType == null) return null;
             double value = GetValue(idEnt, classType.UnitFactor, classType.ClassName);
             if (value != 0)

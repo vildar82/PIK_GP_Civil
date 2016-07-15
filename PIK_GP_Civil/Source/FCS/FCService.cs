@@ -24,17 +24,45 @@ namespace PIK_GP_Civil.FCS
         Document doc;
         Database db;
         Editor ed;
-        ITableService ts;
+        ITableService tableService;
+        IClassTypeService classService;
 
         public static MapApplication MapApp { get { return HostMapApplicationServices.Application; } }
 
-        public FCService(Document doc, ITableService tableService)
+        public FCService(Document doc, ITableService tableService, IClassTypeService classService)
         {
             this.doc = doc;
             db = doc.Database;
             ed = doc.Editor;
-            this.ts = tableService;            
+            this.tableService = tableService;
+            this.classService = classService;          
         }
+
+        public static T GetPropertyValue<T> (string name, List<FCProperty> props, ObjectId idEnt, bool isRequired)
+        {
+            T resVal = default(T);
+            var prop = props.Find(p => p.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+            if (prop == null)
+            {
+                if (isRequired)
+                {
+                    Inspector.AddError($"Не определен параметр {name}", idEnt, System.Drawing.SystemIcons.Error);
+                }
+            }
+            else
+            {
+                try
+                {
+                    resVal = (T)Convert.ChangeType(prop.Value, typeof(T));
+                }
+                catch
+                {
+                    Inspector.AddError($"Недопустимый тип значения параметра '{name}'= {prop.Value.ToString()}.", 
+                        idEnt, System.Drawing.SystemIcons.Error);
+                }
+            }
+            return resVal;
+        }        
 
         public void Calc ()
         {            
@@ -43,49 +71,42 @@ namespace PIK_GP_Civil.FCS
             // Группировка и суммирование
             CalcData(classifivators);
             // Таблица            
-            var table = ts.Create();
-            ts.Insert(table, doc);
+            var table = tableService.Create();
+            tableService.Insert(table, doc);
         }
 
         private void CalcData (List<IClassificator> classificators)
         {
             var groups = classificators.GroupBy(g=>g.ClassType.TableName).OrderBy(o=>o.First().ClassType.Index).ToList();
-            ts.CalcRows(groups);                        
+            tableService.CalcRows(groups);                        
         }
 
         private List<IClassificator> GetClassificators (List<ObjectId> ids)
         {
             List<IClassificator> classificators = new List<IClassificator> ();
             using (var t = db.TransactionManager.StartTransaction())
-            {                
+            {
                 foreach (var idEnt in ids)
                 {
-                    if (!idEnt.ObjectClass.IsDerivedFrom(RXClassCurve) && 
+                    if (!idEnt.ObjectClass.IsDerivedFrom(RXClassCurve) &&
                         idEnt.ObjectClass != RXClassHatch)
                     {
                         continue;
                     }
-                    
-                    try
+
+
+                    var tags  = GetAllTags(idEnt);
+                    if (tags.Any())
                     {
-                        var tags = new StringCollection();                        
-                        GetAllTags(idEnt, ref tags);
-                        if (tags.Count != 0)
+                        var classificator = ClassFactory.Create(idEnt, tags, classService);
+                        if (classificator == null)
                         {
-                            var classificator = ClassFactory.Create(idEnt, tags, ts);
-                            if (classificator == null)
-                            {
-                                Inspector.AddError($"Пропущен объект класса - {string.Join(",", tags)}", idEnt, System.Drawing.SystemIcons.Warning);
-                            }
-                            else
-                            {
-                                classificators.Add(classificator);
-                            }
+                            Inspector.AddError($"Пропущен объект класса - {string.Join(",", tags)}", idEnt, System.Drawing.SystemIcons.Warning);
                         }
-                    }
-                    catch
-                    {
-                        //GetAllTags кидает исключение                   
+                        else
+                        {
+                            classificators.Add(classificator);
+                        }
                     }
                 }
                 t.Commit();
@@ -93,10 +114,17 @@ namespace PIK_GP_Civil.FCS
             return classificators;
         }
 
-        public static void GetAllTags (ObjectId idEnt, ref StringCollection tags)
+        public static IEnumerable<string> GetAllTags (ObjectId idEnt)
         {
             StringCollection schemas = new StringCollection();
-            MapApp.ActiveProject.ClassificationManager.GetAllTags(ref tags, ref schemas, idEnt);
+            StringCollection tags = new StringCollection();
+            try
+            {
+                MapApp.ActiveProject.ClassificationManager.GetAllTags(ref tags, ref schemas, idEnt);
+            }
+            catch { }
+            var res = tags.Cast<string>();
+            return res;
         }
 
         public static List<FCProperty> GetProperties (ObjectId idEnt)

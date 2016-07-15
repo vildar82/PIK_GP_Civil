@@ -14,7 +14,7 @@ namespace PIK_GP_Civil.Elements.Buildings
     /// </summary>
     public class Surround : Building
     {
-        public Surround (Polyline pl, int floors, List<FCProperty> props) : base(pl, floors, props)
+        public Surround (Polyline pl, List<FCProperty> props) : base(pl, props)
         {
         }
     }

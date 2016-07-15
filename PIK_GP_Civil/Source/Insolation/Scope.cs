@@ -15,12 +15,10 @@ namespace PIK_GP_Civil.Insolation
     public class Scope
     {
         Extents3d ext;
-        public List<IBuilding> Buildings { get; set; }
-        public int Radius { get; set; }
+        public List<IBuilding> Buildings { get; set; }        
 
-        public Scope (int radius, Extents3d ext, List<IBuilding> items)
-        {
-            Radius = radius;
+        public Scope (Extents3d ext, List<IBuilding> items)
+        {            
             this.ext = ext;
             Buildings = items;
         }

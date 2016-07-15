@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AcadLib;
+using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.Geometry;
 
 namespace PIK_GP_Civil.Insolation.SunlightRule
@@ -24,7 +25,8 @@ namespace PIK_GP_Civil.Insolation.SunlightRule
         /// </summary>        
         public int GetLength (int height)
         {
-            return Convert.ToInt32(height * ratioLength);
+            var len = Convert.ToInt32(height * ratioLength);
+            return len;
         }
 
         /// <summary>
@@ -58,6 +60,16 @@ namespace PIK_GP_Civil.Insolation.SunlightRule
             ptRes = ptRes + vecHeightProjection * a;
 
             return ptRes.Convert3d();
+        }
+
+        public Extents3d GetScanExtents (Point3d pt, int height)
+        {
+            var lenH = GetLength(height);
+            var a = lenH * Math.Tan((90- StartAngle).ToRadians());
+            var minPt = new Point3d(pt.X-a,pt.Y -lenH, 0);
+            var maxPt = new Point3d(pt.X+ a,pt.Y, 0);
+            var ext = new Extents3d(minPt, maxPt);
+            return ext;
         }
     }
 }

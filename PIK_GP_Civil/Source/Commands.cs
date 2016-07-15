@@ -84,9 +84,10 @@ namespace PIK_GP_Civil
         public static void GP_FCS_Balance ()
         {
             CommandStart.Start(doc =>
-            {
-                FCS.Balance.BalanceService balanceServ = new FCS.Balance.BalanceService(doc.Database);
-                FCS.FCService tep = new FCS.FCService (doc, balanceServ);
+            {                
+                FCS.FCService tep = new FCS.FCService (doc, 
+                    new FCS.Balance.BalanceTableService(doc.Database), 
+                    new FCS.Balance.BalanceClassService());
                 tep.Calc();
             });
         }
