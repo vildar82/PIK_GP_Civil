@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using AcadLib.Errors;
 using Autodesk.AutoCAD.DatabaseServices;
 using PIK_GP_Civil.InfraWorks.Blocks;
 
@@ -15,9 +17,8 @@ namespace PIK_GP_Civil.InfraWorks
     {
         public static Dictionary<string, Type> BlockTypes = new Dictionary<string, Type>()
             {
-                { BlockSectionInfro.BlockNameOrdinary, typeof(BlockSectionInfro) },
-                { BlockSectionInfro.BlockNameAngle, typeof(BlockSectionInfro) },
-                { BlockSectionInfro.BlockNameTower, typeof(BlockSectionInfro) },
+                { BlockSectionKPInfro.BlockNameKPMatch, typeof(BlockSectionKPInfro) },
+                { BlockSectionGPInfro.BlockNameGPMatch, typeof(BlockSectionGPInfro) },
                 { KindergartenInfro.BlockName, typeof(KindergartenInfro) },
                 { SchoolInfro.BlockName, typeof(SchoolInfro) },
                 { ParkingInfro.BlockName, typeof(ParkingInfro) }
@@ -31,12 +32,24 @@ namespace PIK_GP_Civil.InfraWorks
             {
                 var blRef = (BlockReference)ent;
                 string blName = blRef.GetEffectiveName();
-                if (BlockTypes.TryGetValue(blName, out typeBlock))
+                var blockType = GetType(blName);              
+                if (blockType != null)
                 {
-                    res = (IInfrastructure)Activator.CreateInstance(typeBlock, blName, blRef);
+                    res = (IInfrastructure)Activator.CreateInstance(blockType, blName, blRef);                    
+                    if (res?.Error != null)
+                    {
+                        Inspector.AddError(res.Error);
+                        res = null;
+                    }
                 }                
             }
             return res;
+        }
+
+        private static Type GetType (string blName)
+        {
+            var res = BlockTypes.FirstOrDefault(t => Regex.IsMatch(blName, t.Key, RegexOptions.IgnoreCase));            
+            return res.Value;
         }
     }
 }
