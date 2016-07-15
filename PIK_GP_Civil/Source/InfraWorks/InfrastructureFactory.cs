@@ -26,8 +26,7 @@ namespace PIK_GP_Civil.InfraWorks
 
         public static IInfrastructure Create (Entity ent)
         {
-            IInfrastructure res = null;
-            Type typeBlock;
+            IInfrastructure res = null;            
             if (ent is BlockReference)
             {
                 var blRef = (BlockReference)ent;
