@@ -7,7 +7,7 @@ using Autodesk.AutoCAD.DatabaseServices;
 using PIK_GP_Civil.InfraWorks;
 using PIK_GP_Civil.InfraWorks.ODs;
 
-namespace PIK_GP_Civil.Elements.Blocks
+namespace PIK_GP_Civil.InfraWorks.Blocks
 {
     public class BlockSectionInfro : PIK_GP_Acad.KP.KP_BlockSection.BlockSection, IInfrastructure
     {

@@ -7,7 +7,7 @@ using Autodesk.AutoCAD.DatabaseServices;
 using PIK_GP_Civil.InfraWorks;
 using PIK_GP_Civil.InfraWorks.ODs;
 
-namespace PIK_GP_Civil.Elements.Blocks
+namespace PIK_GP_Civil.InfraWorks.Blocks
 {
     public class SchoolInfro : PIK_GP_Acad.KP.Social.SchoolBlock, IInfrastructure
     {

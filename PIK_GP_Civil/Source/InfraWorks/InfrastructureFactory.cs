@@ -4,8 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Autodesk.AutoCAD.DatabaseServices;
-using PIK_GP_Civil.Elements;
-using PIK_GP_Civil.Elements.Blocks;
+using PIK_GP_Civil.InfraWorks.Blocks;
 
 namespace PIK_GP_Civil.InfraWorks
 {

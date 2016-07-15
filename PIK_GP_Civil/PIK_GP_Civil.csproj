@@ -94,10 +94,10 @@
     </Compile>
     <Compile Include="Source\Commands.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Source\Elements\Blocks\SchoolInfro.cs" />
-    <Compile Include="Source\Elements\Blocks\ParkingInfro.cs" />
-    <Compile Include="Source\Elements\Blocks\KindergartenInfro.cs" />
-    <Compile Include="Source\Elements\Blocks\BlockSectionInfro.cs" />
+    <Compile Include="Source\InfraWorks\Blocks\SchoolInfro.cs" />
+    <Compile Include="Source\InfraWorks\Blocks\ParkingInfro.cs" />
+    <Compile Include="Source\InfraWorks\Blocks\KindergartenInfro.cs" />
+    <Compile Include="Source\InfraWorks\Blocks\BlockSectionInfro.cs" />
     <Compile Include="Source\InfraWorks\IInfrastructure.cs" />
     <Compile Include="Source\InfraWorks\InfrastructureFactory.cs" />
     <Compile Include="Source\InfraWorks\ExportService.cs" />
