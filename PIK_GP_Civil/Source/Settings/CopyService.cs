@@ -9,7 +9,7 @@ using Autodesk.Civil;
 using Autodesk.Civil.ApplicationServices;
 using Autodesk.Civil.DatabaseServices.Styles;
 
-namespace PIK_GP_Civil.Lib.Settings
+namespace PIK_GP_Civil.Settings
 {
     /// <summary>
     /// Копирование настроек из одного файла в другой

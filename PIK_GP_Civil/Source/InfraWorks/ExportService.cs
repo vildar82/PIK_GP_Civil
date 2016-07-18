@@ -7,7 +7,7 @@ using AcadLib;
 using AcadLib.Errors;
 using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.DatabaseServices;
-using PIK_GP_Civil.Lib.OD;
+using PIK_GP_Acad.Elements.InfraworksExport;
 
 namespace PIK_GP_Civil.InfraWorks
 {
@@ -37,10 +37,14 @@ namespace PIK_GP_Civil.InfraWorks
                     // Определение объекта инфраструктуры
                     try
                     {
-                        var infroBlock = InfrastructureFactory.Create(ent);
+                        var infroBlock = PIK_GP_Acad.Elements.ElementFactory.Create<IInfraworksExport>(ent);
                         if (infroBlock != null)
                         {
-                            infroBlock.Export(cs);
+                            var odRecs = infroBlock.GetODRecords();
+                            foreach (var rec in odRecs)
+                            {
+                                OD.ODService.AddRecord(rec);
+                            }
                         }
                     }
                     catch (Exception ex)
@@ -98,11 +102,11 @@ namespace PIK_GP_Civil.InfraWorks
         //    Application.ShowAlertDialog("Готово");
         //}
 
-        public static ObjectId CopyPl (BlockTableRecord btr, BlockReference blRef, Polyline pl)
+        public static ObjectId CopyPl (ObjectId idBtrNew, BlockReference blRef, Polyline pl)
         {
             if (pl != null)
             {
-                var idPlCopy = pl.Id.CopyEnt(btr.Id);
+                var idPlCopy = pl.Id.CopyEnt(idBtrNew);
                 using (var plCopy = idPlCopy.GetObject(OpenMode.ForWrite, false, true) as Polyline)
                 {
                     plCopy.TransformBy(blRef.BlockTransform);

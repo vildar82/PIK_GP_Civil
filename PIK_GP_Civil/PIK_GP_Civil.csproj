@@ -94,21 +94,10 @@
     </Compile>
     <Compile Include="Source\Commands.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Source\InfraWorks\Blocks\BlockSectionGPInfro.cs" />
-    <Compile Include="Source\InfraWorks\Blocks\SchoolInfro.cs" />
-    <Compile Include="Source\InfraWorks\Blocks\ParkingInfro.cs" />
-    <Compile Include="Source\InfraWorks\Blocks\KindergartenInfro.cs" />
-    <Compile Include="Source\InfraWorks\Blocks\BlockSectionKPInfro.cs" />
-    <Compile Include="Source\InfraWorks\IInfrastructure.cs" />
-    <Compile Include="Source\InfraWorks\InfrastructureFactory.cs" />
     <Compile Include="Source\InfraWorks\ExportService.cs" />
-    <Compile Include="Source\InfraWorks\ODs\ODCoverage.cs" />
-    <Compile Include="Source\InfraWorks\ODs\ODBuilding.cs" />
     <Compile Include="Source\Kadastr\KadastrService.cs" />
-    <Compile Include="Source\Lib\OD\ODParameter.cs" />
-    <Compile Include="Source\Lib\OD\ODService.cs" />
-    <Compile Include="Source\Lib\OD\ODTable.cs" />
-    <Compile Include="Source\Lib\Settings\CopyService.cs" />
+    <Compile Include="Source\OD\ODService.cs" />
+    <Compile Include="Source\Settings\CopyService.cs" />
     <Compile Include="Source\TurningPoint\TurningPointService.cs" />
     <Compile Include="Source\TurningPoint\TurningPointOptions.cs" />
     <Compile Include="Source\TurningPoint\TurningUserOptions.cs" />

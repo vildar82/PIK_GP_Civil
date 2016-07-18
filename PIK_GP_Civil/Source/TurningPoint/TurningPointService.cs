@@ -12,7 +12,7 @@ using Autodesk.Civil.DatabaseServices;
 using Autodesk.Civil.DatabaseServices.Styles;
 using AcadLib.Files;
 using AcadLib.Errors;
-using PIK_GP_Civil.Lib.Settings;
+using PIK_GP_Civil.Settings;
 using Autodesk.Civil.Settings;
 using Autodesk.AutoCAD.EditorInput;
 
