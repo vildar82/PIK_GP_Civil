@@ -84,8 +84,7 @@ namespace PIK_GP_Civil
                 InfraWorks.ExportService.Export(doc);
             });
         }
-        #endregion Концепция
-
+        #endregion Концепция        
 
         public void Initialize()
         {
@@ -102,6 +101,9 @@ namespace PIK_GP_Civil
                 InitCommands();
                 PaletteSetCommands.CommandsAddin.AddRange(CommandsPalette);
             }
+
+            // Контекстное меню для трассы
+            Navigator.AligmentShowProfile.AttachContextMenu();
         }
 
         public void Terminate()
