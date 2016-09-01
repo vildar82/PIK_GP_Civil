@@ -14,22 +14,45 @@ using AcadLib;
 namespace PIK_GP_Civil.Navigator
 {
     class AligmentShowProfile
-    {        
-        static RXClass RxClassAlignment = RXObject.GetClass(typeof(Alignment));        
+    {
+        private const string MenuName = "Показать профиль трассы";
+        private static RXClass RxClassAlignment = RXObject.GetClass(typeof(Alignment));
+        private static MenuItem Menu;
 
         public static void AttachContextMenu ()
         {
             var cme = new ContextMenuExtension();            
-            MenuItem miShow = new MenuItem("Показать профиль трассы");
-            miShow.Click += ShowImplied;
-            cme.MenuItems.Add(miShow);
+            Menu = new MenuItem(MenuName);
+            Menu.Click += ShowImplied;
+            Menu.Icon = Properties.Resources.AlignmentProfile;            
+            cme.MenuItems.Add(Menu);
             cme.MenuItems.Add(new MenuItem(""));
-            //cme.Popup += cme_Popup;                        
+            cme.Popup += Cme_Popup;            
             Application.AddObjectContextMenuExtension(RxClassAlignment, cme);
-        }       
+        }
+
+        private static void Cme_Popup (object sender, EventArgs e)
+        {
+            var contextMenu = sender as ContextMenuExtension;
+            if (contextMenu != null)
+            {
+                var doc = Application.DocumentManager.MdiActiveDocument;
+                if (doc == null) return;
+                var ed = doc.Editor;
+
+                var menu = contextMenu.MenuItems[0];
+                var selImpl = ed.SelectImplied();
+                var mVisible = false;
+                if (selImpl.Status == PromptStatus.OK)
+                {
+                    mVisible = selImpl.Value.Count <= 1;
+                }
+                menu.Enabled = mVisible;
+            }
+        }
 
         public static void ShowImplied (object sender, EventArgs e)
-        {            
+        {   
             var doc = Application.DocumentManager.MdiActiveDocument;
             Editor ed = doc.Editor;
             PromptSelectionResult selImplRes = ed.SelectImplied();
@@ -37,15 +60,16 @@ namespace PIK_GP_Civil.Navigator
             {
                 using (var t = doc.TransactionManager.StartTransaction())
                 {
-                    foreach (var idEnt in selImplRes.Value.GetObjectIds())
-                    {
-                        if (idEnt.ObjectClass == RxClassAlignment)
+                    foreach (SelectedObject selEnt in selImplRes.Value)
+                    {   
+                        if (selEnt.ObjectId.ObjectClass == RxClassAlignment)
                         {
-                            var align = idEnt.GetObject(OpenMode.ForRead) as Alignment;
-                            Show(align, doc);
+                            var align = selEnt.ObjectId.GetObject(OpenMode.ForRead) as Alignment;
+                            Show(align, doc);                            
                             break;
                         }
                     }
+                    ed.SetImpliedSelection(new ObjectId[0]);
                     t.Commit();
                 }
             }

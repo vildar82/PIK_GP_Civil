@@ -61,6 +61,16 @@ namespace PIK_GP_Civil.Properties {
         }
         
         /// <summary>
+        ///   Поиск локализованного ресурса типа System.Drawing.Icon, аналогичного (Значок).
+        /// </summary>
+        internal static System.Drawing.Icon AlignmentProfile {
+            get {
+                object obj = ResourceManager.GetObject("AlignmentProfile", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
         /// </summary>
         internal static System.Drawing.Bitmap GP_Civil_OKSXML {
