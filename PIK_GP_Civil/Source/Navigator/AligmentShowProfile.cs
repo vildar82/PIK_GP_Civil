@@ -17,7 +17,7 @@ namespace PIK_GP_Civil.Navigator
     {
         private const string MenuName = "Показать профиль трассы";
         private static RXClass RxClassAlignment = RXObject.GetClass(typeof(Alignment));
-        private static MenuItem Menu;
+        private static MenuItem Menu;        
 
         public static void AttachContextMenu ()
         {
@@ -41,38 +41,70 @@ namespace PIK_GP_Civil.Navigator
                 var ed = doc.Editor;
 
                 var menu = contextMenu.MenuItems[0];
-                var selImpl = ed.SelectImplied();
-                var mVisible = false;
+                var selImpl = ed.SelectImplied();                
+
+                var mVisible = true;
+                var mEnabled = true;
                 if (selImpl.Status == PromptStatus.OK)
                 {
-                    mVisible = selImpl.Value.Count <= 1;
+                    // Если выбрано одна трасса - то проверяем есть ли у нее виды профиля и тогда активируем меню
+                    if (selImpl.Value.Count == 1)
+                    {
+                        mVisible = true;
+                        using (var t = doc.TransactionManager.StartTransaction())
+                        {
+                            var align = GetSelectedAlignment(ed);
+                            if (align == null || align.GetProfileViewIds().Count ==0)
+                            {
+                                // У трассы нет видов профилей - деактивируем меню
+                                mEnabled = false;
+                            }
+                            t.Commit();
+                        }                    
+                    }
+                    else
+                    {
+                        // Выбрано несколько трасс - скрываем меню
+                        mVisible = false;
+                    }
                 }
-                menu.Enabled = mVisible;
+                menu.Enabled = mEnabled;
+                menu.Visible = mVisible;
             }
         }
 
         public static void ShowImplied (object sender, EventArgs e)
-        {   
+        {
             var doc = Application.DocumentManager.MdiActiveDocument;
             Editor ed = doc.Editor;
-            PromptSelectionResult selImplRes = ed.SelectImplied();
-            if (selImplRes.Status== PromptStatus.OK)
+            using (var t = doc.TransactionManager.StartTransaction())
             {
-                using (var t = doc.TransactionManager.StartTransaction())
+                var align = GetSelectedAlignment(ed);
+                if (align != null)
                 {
-                    foreach (SelectedObject selEnt in selImplRes.Value)
-                    {   
-                        if (selEnt.ObjectId.ObjectClass == RxClassAlignment)
-                        {
-                            var align = selEnt.ObjectId.GetObject(OpenMode.ForRead) as Alignment;
-                            Show(align, doc);                            
-                            break;
-                        }
-                    }
+                    Show(align, doc);
                     ed.SetImpliedSelection(new ObjectId[0]);
-                    t.Commit();
+                }
+                t.Commit();
+            }
+        }
+
+        private static Alignment GetSelectedAlignment (Editor ed)
+        {
+            Alignment align = null;
+            PromptSelectionResult selImplRes = ed.SelectImplied();
+            if (selImplRes.Status == PromptStatus.OK)
+            {
+                foreach (SelectedObject selEnt in selImplRes.Value)
+                {
+                    if (selEnt.ObjectId.ObjectClass == RxClassAlignment)
+                    {
+                        align = selEnt.ObjectId.GetObject(OpenMode.ForRead) as Alignment;
+                        break;
+                    }
                 }
             }
+            return align;
         }
 
         private static void Show (Alignment align, Document doc)
