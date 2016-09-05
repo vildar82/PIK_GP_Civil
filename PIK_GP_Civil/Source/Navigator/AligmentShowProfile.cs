@@ -23,7 +23,7 @@ namespace PIK_GP_Civil.Navigator
         {
             var cme = new ContextMenuExtension();            
             Menu = new MenuItem(MenuName);
-            Menu.Click += ShowImplied;
+            Menu.Click += (o,e)=>ShowAligmentProfile();
             Menu.Icon = Properties.Resources.AlignmentProfile;            
             cme.MenuItems.Add(Menu);
             cme.MenuItems.Add(new MenuItem(""));
@@ -73,20 +73,22 @@ namespace PIK_GP_Civil.Navigator
             }
         }
 
-        public static void ShowImplied (object sender, EventArgs e)
+        public static void ShowAligmentProfile ()
         {
-            var doc = Application.DocumentManager.MdiActiveDocument;
-            Editor ed = doc.Editor;
-            using (var t = doc.TransactionManager.StartTransaction())
-            {
-                var align = GetSelectedAlignment(ed);
-                if (align != null)
+            CommandStart.Start(doc =>
+            {                   
+                Editor ed = doc.Editor;
+                using (var t = doc.TransactionManager.StartTransaction())
                 {
-                    Show(align, doc);
-                    ed.SetImpliedSelection(new ObjectId[0]);
+                    var align = GetSelectedAlignment(ed);
+                    if (align != null)
+                    {
+                        Show(align, doc);
+                        ed.SetImpliedSelection(new ObjectId[0]);
+                    }
+                    t.Commit();
                 }
-                t.Commit();
-            }
+            });
         }
 
         private static Alignment GetSelectedAlignment (Editor ed)
