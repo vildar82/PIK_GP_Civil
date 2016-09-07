@@ -102,8 +102,10 @@ namespace PIK_GP_Civil
                 PaletteSetCommands.CommandsAddin.AddRange(CommandsPalette);
             }
 
-            // Контекстное меню для трассы
+            // Контекстное меню для трассы Alignment
             Navigator.AligmentShowProfile.AttachContextMenu();
+            // Контекстное меню для FeatureLine
+            FeatureLines.DetachFLFromTINSurface.DetachFlFromSurface.AttachContextMenu();
         }
 
         public void Terminate()

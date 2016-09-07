@@ -94,6 +94,8 @@
     </Compile>
     <Compile Include="Source\Commands.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Source\FeatureLines\DetachFLFromTINSurface\DetachFLfromSurface.cs" />
+    <Compile Include="Source\FeatureLines\DetachFLFromTINSurface\StyleHelper.cs" />
     <Compile Include="Source\InfraWorks\ExportService.cs" />
     <Compile Include="Source\Kadastr\KadastrService.cs" />
     <Compile Include="Source\Navigator\AligmentShowProfile.cs" />
