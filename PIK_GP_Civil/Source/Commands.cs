@@ -33,13 +33,13 @@ namespace PIK_GP_Civil
             {
                 new PaletteCommand("Кадастр", Resources.GP_Civil_OKSXML,
                         nameof(GP_Civil_OKSXML), "Конвертер выписок РосРеестра", GroupKP),
-                new PaletteCommand("Создание поворотных точек", Resources.GP_Civil_TutningPoints,
-                        nameof(GP_Civil_TurningPointCreate), "", GroupKP),
-                new PaletteCommand("Создание таблицы поворотных точек", Resources.GP_Civil_TutningPointsTable,
-                        nameof(GP_Civil_TurningPointTable), "", GroupKP),
-                new PaletteCommand("Экспорт в InfraWorks", Resources.KP_ExportToInfraworks,
-                        nameof(GP_Civil_ExportToInfraWorks), "Копирование контуров полилиний из блоков инфраструктуры (блок-секции, СОШ, ДОО) в модель, для последующего экспорта в InfraWorks.", 
-                        GroupKP)                
+                //new PaletteCommand("Создание поворотных точек", Resources.GP_Civil_TutningPoints,
+                //        nameof(GP_Civil_TurningPointCreate), "", GroupKP),
+                //new PaletteCommand("Создание таблицы поворотных точек", Resources.GP_Civil_TutningPointsTable,
+                //        nameof(GP_Civil_TurningPointTable), "", GroupKP),
+                //new PaletteCommand("Экспорт в InfraWorks", Resources.KP_ExportToInfraworks,
+                //        nameof(GP_Civil_ExportToInfraWorks), "Копирование контуров полилиний из блоков инфраструктуры (блок-секции, СОШ, ДОО) в модель, для последующего экспорта в InfraWorks.", 
+                //        GroupKP)                
             };
         }
         //
