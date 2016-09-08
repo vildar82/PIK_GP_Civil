@@ -70,13 +70,12 @@ namespace PIK_GP_Civil.TurningPoint
 
         public async void StartCreatePoints()
         {
-            Init();
-
             // Запуск команды простановки точек в вершинах полилинии              
             //dynamic acadApp = Application.AcadApplication;
             //acadApp.ActiveDocument.SendCommand("CREATEPTPLYLNCTRVERTAUTO ");         
             try
             {
+                Init();
                 await ed.CommandAsync("CREATEPTPLYLNCTRVERTAUTO", Editor.PauseToken);
             }
             catch
@@ -103,11 +102,10 @@ namespace PIK_GP_Civil.TurningPoint
 
         public async void StartCreateTable()
         {
-            Init();
-
             // Запуск команды простановки точек в вершинах полилинии                          
             try
             {
+                Init();
                 await ed.CommandAsync("_AeccAddPointTable", Editor.PauseToken);
             }
             catch
