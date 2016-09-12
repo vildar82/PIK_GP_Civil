@@ -20,9 +20,9 @@ namespace PIK_GP_Civil.TurningPoint
 
         [Category("Файл шаблона")]
         [DisplayName("Путь к файлу шаблона")]
-        [Description(@"Например: z:\Civil3D_server\KR\PIK_KR.dwt.")]
-        [DefaultValue(@"z:\Civil3D_server\KR\PIK_KR.dwt")]
-        public string TemplateFilePath { get; set; } = @"z:\Civil3D_server\KR\PIK_KR.dwt";
+        [Description(@"Например: \\diskstation\Exchange_PIK\C3D_Projects\KR\PIK_KR.dwt.")]
+        [DefaultValue(@"\\diskstation\Exchange_PIK\C3D_Projects\KR\PIK_KR.dwt")]
+        public string TemplateFilePath { get; set; } = @"\\diskstation\Exchange_PIK\C3D_Projects\KR\PIK_KR.dwt";
 
         [Category("Стили")]
         [DisplayName("Стиль точки")]
