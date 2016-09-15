@@ -101,6 +101,7 @@
     <Compile Include="Source\Navigator\AligmentShowProfile.cs" />
     <Compile Include="Source\OD\ODService.cs" />
     <Compile Include="Source\Settings\CopyService.cs" />
+    <Compile Include="Source\Settings\DrawingSettings.cs" />
     <Compile Include="Source\TurningPoint\TurningPointService.cs" />
     <Compile Include="Source\TurningPoint\TurningPointOptions.cs" />
     <Compile Include="Source\TurningPoint\TurningUserOptions.cs" />

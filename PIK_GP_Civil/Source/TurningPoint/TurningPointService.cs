@@ -191,7 +191,7 @@ namespace PIK_GP_Civil.TurningPoint
                 if (IsExistStyles())                
                     return;                                            
 
-            string fileTemplateKR = options.TemplateFilePath.GetCadSettingsRealPath();
+            string fileTemplateKR = options.TemplateFilePath;
 
             using (var dbTemplate = new Database(false, true))
             {

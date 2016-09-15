@@ -84,7 +84,16 @@ namespace PIK_GP_Civil
                 InfraWorks.ExportService.Export(doc);
             });
         }
-        #endregion Концепция        
+        #endregion Концепция  
+
+        [CommandMethod(Group, nameof(GP_Civil_DrawingSettings), CommandFlags.Modal)]
+        public static void GP_Civil_DrawingSettings ()
+        {
+            CommandStart.Start(doc =>
+            {
+                Settings.DrawingSettings.Setds();
+            });
+        }
 
         public void Initialize()
         {
