@@ -39,7 +39,9 @@ namespace PIK_GP_Civil
                         nameof(GP_Civil_TurningPointTable), "", GroupKP),
                 new PaletteCommand("Экспорт в InfraWorks", Resources.KP_ExportToInfraworks,
                         nameof(GP_Civil_ExportToInfraWorks), "Копирование контуров полилиний из блоков инфраструктуры (блок-секции, СОШ, ДОО) в модель, для последующего экспорта в InfraWorks.", 
-                        GroupKP)                
+                        GroupKP),
+                new PaletteCommand("Установка настроек чертежа", Resources.Settings,
+                        nameof(GP_Civil_DrawingSettings), "Установка стандартнвх настроек чертежа (Еденицы измерения, Параметры среды)", PIK_GP_Acad.Commands.GroupCommon)
             };
         }
         //
@@ -86,6 +88,9 @@ namespace PIK_GP_Civil
         }
         #endregion Концепция  
 
+        /// <summary>
+        /// Установка стандартных настроек чертежа цивила - единицы и т.п.
+        /// </summary>
         [CommandMethod(Group, nameof(GP_Civil_DrawingSettings), CommandFlags.Modal)]
         public static void GP_Civil_DrawingSettings ()
         {

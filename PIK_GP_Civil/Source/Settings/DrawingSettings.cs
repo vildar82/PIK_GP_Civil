@@ -53,6 +53,7 @@ namespace PIK_GP_Civil.Settings
             doc.Settings.DrawingSettings.AmbientSettings.Acceleration.Unit.Value = Autodesk.Civil.AccelerationUnitType.MeterPerSecSquared;
             doc.Settings.DrawingSettings.AmbientSettings.Pressure.Unit.Value = Autodesk.Civil.PressureUnitType.Kilopascal;
 
+            Autodesk.AutoCAD.ApplicationServices.Application.ShowAlertDialog("Готово");
         }
     }
 }
