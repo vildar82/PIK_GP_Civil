@@ -11,6 +11,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Autodesk.AutoCAD.Runtime;
 using Autodesk.AutoCAD.Windows;
+using AcadLib;
 
 namespace PIK_GP_Civil.FeatureLines.DetachFLFromTINSurface
 {
@@ -57,81 +58,83 @@ namespace PIK_GP_Civil.FeatureLines.DetachFLFromTINSurface
 
         public static void Detach ()
         {
-            Document doc = Application.DocumentManager.MdiActiveDocument;
-            var ed = doc.Editor;
-            var civil = CivilApplication.ActiveDocument;
-            var surfIds = civil.GetSurfaceIds();
-
-            var selRes = ed.SelectImplied();
-            if (selRes.Status != PromptStatus.OK)
+            CommandStart.Start(doc =>
             {
-                return;
-            }
-            List<ObjectId> idsFlToDetach = selRes.Value.GetObjectIds().ToList();
-            List<ObjectId> idsFlDetached = new List<ObjectId>();
-            List<ObjectId> idsEditedSurf = new List<ObjectId>();
+                var ed = doc.Editor;
+                var civil = CivilApplication.ActiveDocument;
+                var surfIds = civil.GetSurfaceIds();
 
-            using (var t = doc.TransactionManager.StartTransaction())
-            {
-                bool isEditedSurf = false;
-                foreach (ObjectId surfId in surfIds)
+                var selRes = ed.SelectImplied();
+                if (selRes.Status != PromptStatus.OK)
                 {
-                    var surf = surfId.GetObject(OpenMode.ForRead) as TinSurface;
-                    dynamic surfCom = surf.AcadObject;
+                    return;
+                }
+                List<ObjectId> idsFlToDetach = selRes.Value.GetObjectIds().ToList();
+                List<ObjectId> idsFlDetached = new List<ObjectId>();
+                List<ObjectId> idsEditedSurf = new List<ObjectId>();
 
-                    for (int i = 0; i < surfCom.Breaklines.Count; i++)
+                using (var t = doc.TransactionManager.StartTransaction())
+                {
+                    bool isEditedSurf = false;
+                    foreach (ObjectId surfId in surfIds)
                     {
-                        var brLine = surfCom.Breaklines.Item(i);
-                        var brLineEnts = (object[])brLine.BreaklineEntities;
-                        List<ObjectId> idBreaklinesToAdd = new List<ObjectId>();
-                        bool isFind = false;
-                        for (int b = 0; b < brLineEnts.Length; b++)
+                        var surf = surfId.GetObject(OpenMode.ForRead) as TinSurface;
+                        dynamic surfCom = surf.AcadObject;
+
+                        for (int i = 0; i < surfCom.Breaklines.Count; i++)
                         {
-                            var brLineId = Autodesk.AutoCAD.DatabaseServices.DBObject.FromAcadObject(brLineEnts[b]);
-                            if (brLineId.IsNull)
-                                continue;
-                            idBreaklinesToAdd.Add(brLineId);
-                            if (idsFlToDetach.Contains(brLineId))
+                            var brLine = surfCom.Breaklines.Item(i);
+                            var brLineEnts = (object[])brLine.BreaklineEntities;
+                            List<ObjectId> idBreaklinesToAdd = new List<ObjectId>();
+                            bool isFind = false;
+                            for (int b = 0; b < brLineEnts.Length; b++)
                             {
-                                //surf.BreaklinesDefinition.RemoveAt(i); // не всегда срабатывает!?
-                                surfCom.Breaklines.Remove(i);
-                                idBreaklinesToAdd.Remove(brLineId);
-                                isFind = true;
-                                idsFlDetached.Add(brLineId);
+                                var brLineId = Autodesk.AutoCAD.DatabaseServices.DBObject.FromAcadObject(brLineEnts[b]);
+                                if (brLineId.IsNull)
+                                    continue;
+                                idBreaklinesToAdd.Add(brLineId);
+                                if (idsFlToDetach.Contains(brLineId))
+                                {
+                                    //surf.BreaklinesDefinition.RemoveAt(i); // не всегда срабатывает!?
+                                    surfCom.Breaklines.Remove(i);
+                                    idBreaklinesToAdd.Remove(brLineId);
+                                    isFind = true;
+                                    idsFlDetached.Add(brLineId);
+                                }
+                            }
+                            if (isFind)
+                            {
+                                isEditedSurf = true;
+                                if (idBreaklinesToAdd.Any())
+                                {
+                                    AddBreaklinesToSurface(surf, idBreaklinesToAdd);
+                                }
                             }
                         }
-                        if (isFind)
+                        if (isEditedSurf)
                         {
-                            isEditedSurf = true;
-                            if (idBreaklinesToAdd.Any())
-                            {
-                                AddBreaklinesToSurface(surf, idBreaklinesToAdd);
-                            }
+                            isEditedSurf = false;
+                            idsEditedSurf.Add(surfId);
                         }
                     }
-                    if (isEditedSurf)
-                    {
-                        isEditedSurf = false;
-                        idsEditedSurf.Add(surfId);
-                    }
+
+                    // Изменение стиля характерной линии
+                    StyleHelper.Change(idsFlDetached, "Удаленные из поверхности");
+
+                    t.Commit();
                 }
 
-                // Изменение стиля характерной линии
-                StyleHelper.Change(idsFlDetached, "Удаленные из поверхности");
-
-                t.Commit();
-            }
-
-            // Перестройка поверхностей
-            using (var t = doc.TransactionManager.StartTransaction())
-            {
-                foreach (var idSurf in idsEditedSurf)
+                // Перестройка поверхностей
+                using (var t = doc.TransactionManager.StartTransaction())
                 {
-                    TinSurface surface = idSurf.GetObject(OpenMode.ForWrite) as TinSurface;
-                    surface.Rebuild();
+                    foreach (var idSurf in idsEditedSurf)
+                    {
+                        TinSurface surface = idSurf.GetObject(OpenMode.ForWrite) as TinSurface;
+                        surface.Rebuild();
+                    }
+                    t.Commit();
                 }
-                t.Commit();
-            }
+            });
         }
 
         private static void AddBreaklinesToSurface (TinSurface surf, List<ObjectId> idEntsToAdd)
