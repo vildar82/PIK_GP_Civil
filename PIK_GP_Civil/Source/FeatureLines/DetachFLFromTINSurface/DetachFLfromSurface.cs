@@ -18,15 +18,14 @@ namespace PIK_GP_Civil.FeatureLines.DetachFLFromTINSurface
     static class DetachFlFromSurface
     {
         private const string MenuName = "Удалить ХЛ из поверхности";
-        private static RXClass RxClassFeatureLine = RXObject.GetClass(typeof(FeatureLine));
-        private static MenuItem Menu;
+        private static RXClass RxClassFeatureLine = RXObject.GetClass(typeof(FeatureLine));        
 
         public static void AttachContextMenu ()
         {
             var cme = new ContextMenuExtension();
-            Menu = new MenuItem(MenuName);
-            Menu.Click += (o, e) => Detach();
-            cme.MenuItems.Add(Menu);
+            var menu = new MenuItem(MenuName);
+            menu.Click += (o, e) => DetachFeatureLine();
+            cme.MenuItems.Add(menu);
             cme.MenuItems.Add(new MenuItem(""));
             // пока не имеет смысла, нужно найчится проверять принадлежность хар.линии поверхности, без перебора всех поверхностей, только по самой линии
             //cme.Popup += Cme_Popup;
@@ -56,7 +55,7 @@ namespace PIK_GP_Civil.FeatureLines.DetachFLFromTINSurface
             }
         }
 
-        public static void Detach ()
+        public static void DetachFeatureLine ()
         {
             CommandStart.Start(doc =>
             {
