@@ -42,15 +42,15 @@ namespace PIK_GP_Civil.FeatureLines.DetachFLFromTINSurface
                 var ed = doc.Editor;
 
                 var menu = contextMenu.MenuItems[0];
-                var selImpl = ed.SelectImplied();
+                //var selImpl = ed.SelectImplied();
 
                 // TODO: проверить принадлежит ли хар.линия какой-либо поверхности. (пока непонятно как это сделать)
 
 
                 var mVisible = true;
                 var mEnabled = true;
-                if (selImpl.Status == PromptStatus.OK)
-                    menu.Enabled = mEnabled;
+                //if (selImpl.Status == PromptStatus.OK)
+                menu.Enabled = mEnabled;
                 menu.Visible = mVisible;
             }
         }
