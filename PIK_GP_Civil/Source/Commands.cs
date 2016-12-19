@@ -28,48 +28,6 @@ namespace PIK_GP_Civil
         public const string GroupKP = PIK_GP_Acad.Commands.GroupKP;
         public const string GroupCivil = "Civil";
         public static List<IPaletteCommand> CommandsPalette { get; set; }
-        // Комманды        
-
-        [CommandMethod("TestTin", CommandFlags.Modal)]
-        public void TestTin()
-        {
-            var doc = Application.DocumentManager.MdiActiveDocument;
-            var db = doc.Database;
-            var ed = doc.Editor;
-
-            var selOPt = new PromptEntityOptions("\nВыбор поверхности");
-            selOPt.SetRejectMessage("\nТолько поверхность");
-            selOPt.AddAllowedClass(typeof(TinSurface), true);
-            var selTin = ed.GetEntity(selOPt);
-            if (selTin.Status != PromptStatus.OK) return;
-
-            using (var t = doc.TransactionManager.StartTransaction())
-            {
-                var surfId = selTin.ObjectId;
-                var surf = surfId.GetObject(OpenMode.ForRead) as TinSurface;
-                dynamic surfCom = surf.AcadObject;
-                                
-                for (int i = 0; i < surfCom.Breaklines.Count; i++)
-                {
-                    var brLineCom = surfCom.Breaklines.Item(i);
-                    var brLineEnts = (object[])brLineCom.BreaklineEntities;                 
-                    for (int b = 0; b < brLineEnts.Length; b++)
-                    {
-                        var brLineId = Autodesk.AutoCAD.DatabaseServices.DBObject.FromAcadObject(brLineEnts[b]);
-                        if (brLineId.IsValidEx())
-                        {
-                            var brLine = brLineId.GetObject(OpenMode.ForRead) as FeatureLine;
-                            if (brLine.PointsCount== 0)
-                            {
-                                surfCom.Breaklines.Remove(i);                                
-                            }
-                        }                        
-                    }
-                }
-                surf.Rebuild();
-                t.Commit();
-            }
-        }
 
         public static void InitCommands()
         {
@@ -87,11 +45,7 @@ namespace PIK_GP_Civil
                 new PaletteCommand("Установка настроек чертежа", Resources.Settings,
                         nameof(GP_Civil_DrawingSettings), "Установка стандартнвх настроек чертежа (Еденицы измерения, Параметры среды)", PIK_GP_Acad.Commands.GroupCommon)
             };
-        }
-        //
-        // Концепция
-        //
-        #region Концепция    
+        }        
 
         [CommandMethod(Group, nameof(GP_Civil_OKSXML), CommandFlags.Modal)]
         public static void GP_Civil_OKSXML()
@@ -129,8 +83,7 @@ namespace PIK_GP_Civil
             {
                 InfraWorks.ExportService.Export(doc);
             });
-        }
-        #endregion Концепция  
+        }        
 
         /// <summary>
         /// Установка стандартных настроек чертежа цивила - единицы и т.п.
@@ -141,6 +94,18 @@ namespace PIK_GP_Civil
             CommandStart.Start(doc =>
             {
                 Settings.DrawingSettings.Setds();
+            });
+        }
+
+        /// <summary>
+        /// Очистка поверхности - пустых структурных линий
+        /// </summary>
+        [CommandMethod(Group, nameof(GP_Civil_TinSurfaceClearZeroBreaklines), CommandFlags.Modal)]
+        public void GP_Civil_TinSurfaceClearZeroBreaklines()
+        {
+            CommandStart.Start(doc =>
+            {
+                Utils.TinSurfaceUtils.ClearZeroBreaklines();
             });
         }
 

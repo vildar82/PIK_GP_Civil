@@ -105,6 +105,7 @@
     <Compile Include="Source\TurningPoint\TurningPointService.cs" />
     <Compile Include="Source\TurningPoint\TurningPointOptions.cs" />
     <Compile Include="Source\TurningPoint\TurningUserOptions.cs" />
+    <Compile Include="Source\Utils\TinSurfaceUtils.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="AutoCADNetLoad.scr" />
