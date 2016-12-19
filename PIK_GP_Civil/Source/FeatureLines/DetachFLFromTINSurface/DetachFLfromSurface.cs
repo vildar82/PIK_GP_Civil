@@ -32,28 +32,25 @@ namespace PIK_GP_Civil.FeatureLines.DetachFLFromTINSurface
             Application.AddObjectContextMenuExtension(RxClassFeatureLine, cme);
         }
 
-        private static void Cme_Popup (object sender, EventArgs e)
-        {
-            var contextMenu = sender as ContextMenuExtension;
-            if (contextMenu != null)
-            {
-                var doc = Application.DocumentManager.MdiActiveDocument;
-                if (doc == null) return;
-                var ed = doc.Editor;
+        //private static void Cme_Popup (object sender, EventArgs e)
+        //{
+        //    var contextMenu = sender as ContextMenuExtension;
+        //    if (contextMenu != null)
+        //    {
+        //        var doc = Application.DocumentManager.MdiActiveDocument;
+        //        if (doc == null) return;
+        //        var ed = doc.Editor;
 
-                var menu = contextMenu.MenuItems[0];
-                //var selImpl = ed.SelectImplied();
+        //        var menu = contextMenu.MenuItems[0];                
 
-                // TODO: проверить принадлежит ли хар.линия какой-либо поверхности. (пока непонятно как это сделать)
+        //        // TODO: проверить принадлежит ли хар.линия какой-либо поверхности. (пока непонятно как это сделать)
 
-
-                var mVisible = true;
-                var mEnabled = true;
-                //if (selImpl.Status == PromptStatus.OK)
-                menu.Enabled = mEnabled;
-                menu.Visible = mVisible;
-            }
-        }
+        //        var mVisible = true;
+        //        var mEnabled = true;                
+        //        menu.Enabled = mEnabled;
+        //        menu.Visible = mVisible;
+        //    }
+        //}
 
         public static void DetachFeatureLine ()
         {
