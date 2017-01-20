@@ -128,7 +128,7 @@ namespace PIK_GP_Civil
             // Контекстное меню для трассы Alignment
             Navigator.AligmentShowProfile.AttachContextMenu();
             // Контекстное меню для FeatureLine
-            FeatureLines.DetachFLFromTINSurface.DetachFlFromSurface.AttachContextMenu();
+            FeatureLines.DetachFLFromTINSurface.DetachFeatureLineFromSurface.AttachContextMenu();
         }
 
         public void Terminate()

@@ -24,7 +24,7 @@ namespace PIK_GP_Civil.Navigator
             var cme = new ContextMenuExtension();            
             Menu = new MenuItem(MenuName);
             Menu.Click += (o,e)=>ShowAligmentProfile();
-            //Menu.Icon = Properties.Resources.AlignmentProfile;            
+            Menu.Icon = Properties.Resources.AlignmentProfile;            
             cme.MenuItems.Add(Menu);
             cme.MenuItems.Add(new MenuItem(""));
             cme.Popup += Cme_Popup;            

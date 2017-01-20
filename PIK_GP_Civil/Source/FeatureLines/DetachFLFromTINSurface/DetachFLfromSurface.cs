@@ -15,9 +15,9 @@ using AcadLib;
 
 namespace PIK_GP_Civil.FeatureLines.DetachFLFromTINSurface
 {
-    static class DetachFlFromSurface
+    static class DetachFeatureLineFromSurface
     {
-        private const string MenuName = "Удалить ХЛ из поверхности";
+        private const string MenuName = "Извлечь ХЛ из поверхности";
         private static RXClass RxClassFeatureLine = RXObject.GetClass(typeof(FeatureLine));        
 
         public static void AttachContextMenu ()
@@ -25,6 +25,7 @@ namespace PIK_GP_Civil.FeatureLines.DetachFLFromTINSurface
             var cme = new ContextMenuExtension();
             var menu = new MenuItem(MenuName);
             menu.Click += (o, e) => DetachFeatureLine();
+            menu.Icon = Properties.Resources.DetachFeatureLine;
             cme.MenuItems.Add(menu);
             cme.MenuItems.Add(new MenuItem(""));
             // пока не имеет смысла, нужно найчится проверять принадлежность хар.линии поверхности, без перебора всех поверхностей, только по самой линии
@@ -83,6 +84,7 @@ namespace PIK_GP_Civil.FeatureLines.DetachFLFromTINSurface
                             var brLineEnts = (object[])brLine.BreaklineEntities;
                             List<ObjectId> idBreaklinesToAdd = new List<ObjectId>();
                             bool isFind = false;
+                            bool isRemovedBreaklines = false;
                             for (int b = 0; b < brLineEnts.Length; b++)
                             {
                                 var brLineId = Autodesk.AutoCAD.DatabaseServices.DBObject.FromAcadObject(brLineEnts[b]);
@@ -92,7 +94,11 @@ namespace PIK_GP_Civil.FeatureLines.DetachFLFromTINSurface
                                 if (idsFlToDetach.Contains(brLineId))
                                 {
                                     //surf.BreaklinesDefinition.RemoveAt(i); // не всегда срабатывает!?
-                                    surfCom.Breaklines.Remove(i);
+                                    if (!isRemovedBreaklines)
+                                    {
+                                        surfCom.Breaklines.Remove(i);
+                                        isRemovedBreaklines = true;
+                                    }
                                     idBreaklinesToAdd.Remove(brLineId);
                                     isFind = true;
                                     idsFlDetached.Add(brLineId);
