@@ -109,6 +109,26 @@ namespace PIK_GP_Civil
             });
         }
 
+        [CommandMethod(Group, nameof(GP_Civil_ChangeSurfaceLabelStyleScale500To1000), CommandFlags.Modal)]
+        public void GP_Civil_ChangeSurfaceLabelStyleScale500To1000()
+        {
+            CommandStart.Start(doc =>
+            {
+                var scls = new Surface.SurfaceChangeLabelStyles(doc);
+                scls.ChangeStyles("m500", "m1000");
+            });
+        }
+
+        [CommandMethod(Group, nameof(GP_Civil_ChangeSurfaceLabelStyleScale1000To500), CommandFlags.Modal)]
+        public void GP_Civil_ChangeSurfaceLabelStyleScale1000To500()
+        {
+            CommandStart.Start(doc =>
+            {
+                var scls = new Surface.SurfaceChangeLabelStyles(doc);
+                scls.ChangeStyles("m1000", "m500");
+            });
+        }
+
         public void Initialize()
         {
             try
