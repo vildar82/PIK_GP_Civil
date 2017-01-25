@@ -12,7 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
-namespace PIK_GP_Civil.Surface.UI
+namespace PIK_GP_Civil.Surface.ChangeLabelStyles.UI
 {
     /// <summary>
     /// Логика взаимодействия для SurfaceLabelWindow.xaml

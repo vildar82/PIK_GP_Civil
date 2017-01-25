@@ -106,9 +106,9 @@
     <Compile Include="Source\Settings\CopyService.cs" />
     <Compile Include="Source\Settings\DrawingSettings.cs" />
     <Compile Include="Source\Styles\StyleHelper.cs" />
-    <Compile Include="Source\Surface\SurfaceChangeLabelStyles.cs" />
-    <Compile Include="Source\Surface\UI\SurfaceLabelViewModel.cs" />
-    <Compile Include="Source\Surface\UI\SurfaceLabelView.xaml.cs">
+    <Compile Include="Source\Surface\ChangeLabelStyles\SurfaceChangeLabelStyles.cs" />
+    <Compile Include="Source\Surface\ChangeLabelStyles\UI\SurfaceLabelViewModel.cs" />
+    <Compile Include="Source\Surface\ChangeLabelStyles\UI\SurfaceLabelView.xaml.cs">
       <DependentUpon>SurfaceLabelView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Source\TurningPoint\TurningPointService.cs" />
@@ -149,7 +149,7 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
-    <Page Include="Source\Surface\UI\SurfaceLabelView.xaml">
+    <Page Include="Source\Surface\ChangeLabelStyles\UI\SurfaceLabelView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

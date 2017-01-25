@@ -13,7 +13,7 @@ using Autodesk.Civil.DatabaseServices.Styles;
 using PIK_GP_Civil.Styles;
 using System.Text.RegularExpressions;
 
-namespace PIK_GP_Civil.Surface
+namespace PIK_GP_Civil.Surface.ChangeLabelStyles
 {
     /// <summary>
     /// Смена стилей у меток в поверхности
@@ -114,30 +114,32 @@ namespace PIK_GP_Civil.Surface
             Label label = null;
             if (dbo is SurfaceElevationLabel)
             {
-                label = dbo as Label;
+                label = dbo as SurfaceElevationLabel;
                 newStyleId = GetNewLabelScaleStyle(label, ref dictChangeStylesElevLabel, ref dictLabelsStylesElevFromToScale);
-                countLabelChangedStyleElevation +=SetLabelStyle(label, newStyleId);
+                if (SetLabelStyle(label, newStyleId))
+                    countLabelChangedStyleElevation++;
                 countLabelElevation++;
             }
             else if (dbo is SurfaceSlopeLabel)
             {
-                label = dbo as Label;
+                label = dbo as SurfaceSlopeLabel;
                 newStyleId = GetNewLabelScaleStyle(label, ref dictChangeStylesSlopeLabel, ref dictLabelsStylesSlopeFromToScale);
-                countLabelChangedStyleSlope += SetLabelStyle(label, newStyleId);
+                if (SetLabelStyle(label, newStyleId))
+                    countLabelChangedStyleSlope++;
                 countLabelSlope++;
             }           
         }
 
-        private static int SetLabelStyle(Label label,ObjectId newStyleId)
+        private static bool SetLabelStyle(Label label,ObjectId newStyleId)
         {
             if (!newStyleId.IsNull)
             {
                 label.UpgradeOpen();
                 label.StyleId = newStyleId;
-                return 1;
+                return true;
             }
-            return 0;
-        }
+            return false;
+        }        
 
         private ObjectId GetNewLabelScaleStyle(Label label,
             ref Dictionary<ObjectId, ObjectId> dictChangeStyles,

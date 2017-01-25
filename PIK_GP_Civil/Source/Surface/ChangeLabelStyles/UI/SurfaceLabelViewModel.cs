@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PIK_GP_Civil.Surface.UI
+namespace PIK_GP_Civil.Surface.ChangeLabelStyles.UI
 {
     public class SurfaceLabelViewModel
     {
