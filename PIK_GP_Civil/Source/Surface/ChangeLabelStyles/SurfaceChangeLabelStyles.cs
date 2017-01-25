@@ -110,11 +110,10 @@ namespace PIK_GP_Civil.Surface.ChangeLabelStyles
 
         private void ChangeLabelStyle(Autodesk.AutoCAD.DatabaseServices.DBObject dbo)
         {
-            ObjectId newStyleId = ObjectId.Null;
-            Label label = null;
+            ObjectId newStyleId = ObjectId.Null;            
             if (dbo is SurfaceElevationLabel)
             {
-                label = dbo as SurfaceElevationLabel;
+                var label = dbo as SurfaceElevationLabel;                
                 newStyleId = GetNewLabelScaleStyle(label, ref dictChangeStylesElevLabel, ref dictLabelsStylesElevFromToScale);
                 if (SetLabelStyle(label, newStyleId))
                     countLabelChangedStyleElevation++;
@@ -122,7 +121,7 @@ namespace PIK_GP_Civil.Surface.ChangeLabelStyles
             }
             else if (dbo is SurfaceSlopeLabel)
             {
-                label = dbo as SurfaceSlopeLabel;
+                var label = dbo as SurfaceSlopeLabel;
                 newStyleId = GetNewLabelScaleStyle(label, ref dictChangeStylesSlopeLabel, ref dictLabelsStylesSlopeFromToScale);
                 if (SetLabelStyle(label, newStyleId))
                     countLabelChangedStyleSlope++;
@@ -130,12 +129,31 @@ namespace PIK_GP_Civil.Surface.ChangeLabelStyles
             }           
         }
 
+        private void TestExploreLabel(SurfaceElevationLabel label)
+        {
+            var AllowsAnchorMarker = label.AllowsAnchorMarker;
+            var AllowsDimensionAnchors = label.AllowsDimensionAnchors;
+            var AnchorInfo = label.AnchorInfo;
+            var TextComponentIds = label.GetTextComponentIds();
+            foreach (ObjectId textCompId in TextComponentIds)
+            {
+                var textComp = textCompId.GetObject(OpenMode.ForRead) as LabelStyleReferenceTextComponent;                                
+                if (textComp != null)
+                {
+                    var refTextTargetId = label.GetReferenceTextTarget(textCompId);                    
+                    var refTextTarget = refTextTargetId.GetObject( OpenMode.ForRead);
+                }
+            }
+
+        }
+
         private static bool SetLabelStyle(Label label,ObjectId newStyleId)
         {
             if (!newStyleId.IsNull)
             {
                 label.UpgradeOpen();
-                label.StyleId = newStyleId;
+                var changer = new LabelStyleSafeChanger(label);
+                changer.Change(newStyleId);                
                 return true;
             }
             return false;
