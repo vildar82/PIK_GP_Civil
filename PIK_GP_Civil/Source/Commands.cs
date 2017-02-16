@@ -12,6 +12,9 @@ using PIK_GP_Civil.Properties;
 using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.Civil.DatabaseServices;
+using Autodesk.AutoCAD.Geometry;
+using AcadLib.Geometry;
+using PIK_GP_Civil.Utils;
 
 [assembly: CommandClass(typeof(PIK_GP_Civil.Commands))]
 [assembly: ExtensionApplication(typeof(PIK_GP_Civil.Commands))]
@@ -127,7 +130,7 @@ namespace PIK_GP_Civil
                 var scls = new Surface.ChangeLabelStyles.SurfaceChangeLabelStyles(doc);
                 scls.ChangeStyles("m1000", "m500");
             });
-        }
+        }        
 
         public void Initialize()
         {
@@ -145,10 +148,12 @@ namespace PIK_GP_Civil
                 PaletteSetCommands.CommandsAddin.AddRange(CommandsPalette);
             }
 
-            // Контекстное меню для трассы Alignment
-            Navigator.AligmentShowProfile.AttachContextMenu();
+            // Контекстное меню для трассы Alignment            
+            Navigator.AligmentShowProfile.AttachContextMenu();            
             // Контекстное меню для FeatureLine
             FeatureLines.DetachFLFromTINSurface.DetachFeatureLineFromSurface.AttachContextMenu();
+            // Контекстное меню для маскировки откоса
+            GradingMaskUtil.AttachContextMenu();
         }
 
         public void Terminate()

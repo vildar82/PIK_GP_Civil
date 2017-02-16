@@ -118,6 +118,7 @@
     <Compile Include="Source\TurningPoint\TurningPointService.cs" />
     <Compile Include="Source\TurningPoint\TurningPointOptions.cs" />
     <Compile Include="Source\TurningPoint\TurningUserOptions.cs" />
+    <Compile Include="Source\Utils\GradingMaskUtil.cs" />
     <Compile Include="Source\Utils\TinSurfaceUtils.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -151,7 +152,9 @@
   <ItemGroup>
     <None Include="Resources\DetachFeatureLine.ico" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <None Include="Resources\mask.ico" />
+  </ItemGroup>
   <ItemGroup>
     <Page Include="Source\Surface\ChangeLabelStyles\UI\SurfaceLabelView.xaml">
       <SubType>Designer</SubType>

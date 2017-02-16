@@ -22,15 +22,19 @@ namespace PIK_GP_Civil.FeatureLines.DetachFLFromTINSurface
 
         public static void AttachContextMenu ()
         {
-            var cme = new ContextMenuExtension();
-            var menu = new MenuItem(MenuName);
-            menu.Click += (o, e) => DetachFeatureLine();
-            menu.Icon = Properties.Resources.DetachFeatureLine;
-            cme.MenuItems.Add(menu);
-            cme.MenuItems.Add(new MenuItem(""));
-            // пока не имеет смысла, нужно найчится проверять принадлежность хар.линии поверхности, без перебора всех поверхностей, только по самой линии
-            //cme.Popup += Cme_Popup;
-            Application.AddObjectContextMenuExtension(RxClassFeatureLine, cme);
+            try
+            {
+                var cme = new ContextMenuExtension();
+                var menu = new MenuItem(MenuName);
+                menu.Click += (o, e) => DetachFeatureLine();
+                menu.Icon = Properties.Resources.DetachFeatureLine;
+                cme.MenuItems.Add(menu);
+                cme.MenuItems.Add(new MenuItem(""));
+                // пока не имеет смысла, нужно найчится проверять принадлежность хар.линии поверхности, без перебора всех поверхностей, только по самой линии
+                //cme.Popup += Cme_Popup;
+                Application.AddObjectContextMenuExtension(RxClassFeatureLine, cme);
+            }
+            catch { }
         }
 
         //private static void Cme_Popup (object sender, EventArgs e)

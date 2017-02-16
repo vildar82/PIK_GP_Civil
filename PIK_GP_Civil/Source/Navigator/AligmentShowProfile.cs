@@ -21,14 +21,18 @@ namespace PIK_GP_Civil.Navigator
 
         public static void AttachContextMenu ()
         {
-            var cme = new ContextMenuExtension();            
-            Menu = new MenuItem(MenuName);
-            Menu.Click += (o,e)=>ShowAligmentProfile();
-            Menu.Icon = Properties.Resources.AlignmentProfile;            
-            cme.MenuItems.Add(Menu);
-            cme.MenuItems.Add(new MenuItem(""));
-            cme.Popup += Cme_Popup;            
-            Application.AddObjectContextMenuExtension(RxClassAlignment, cme);
+            try
+            {
+                var cme = new ContextMenuExtension();
+                Menu = new MenuItem(MenuName);
+                Menu.Click += (o, e) => ShowAligmentProfile();
+                Menu.Icon = Properties.Resources.AlignmentProfile;
+                cme.MenuItems.Add(Menu);
+                cme.MenuItems.Add(new MenuItem(""));
+                cme.Popup += Cme_Popup;
+                Application.AddObjectContextMenuExtension(RxClassAlignment, cme);
+            }
+            catch { }
         }
 
         private static void Cme_Popup (object sender, EventArgs e)
