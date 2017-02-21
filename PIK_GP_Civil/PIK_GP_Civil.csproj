@@ -112,6 +112,7 @@
     <Compile Include="Source\Surface\ChangeLabelStyles\Components\TextOverrideComponent.cs" />
     <Compile Include="Source\Surface\ChangeLabelStyles\LabelStyleSafeChanger.cs" />
     <Compile Include="Source\Surface\ChangeLabelStyles\Components\TargetComponent.cs" />
+    <Compile Include="Source\Surface\ChangeLabelStyles\LabelStyleScale.cs" />
     <Compile Include="Source\Surface\ChangeLabelStyles\SurfaceChangeLabelStyles.cs" />
     <Compile Include="Source\Surface\ChangeLabelStyles\UI\SurfaceLabelViewModel.cs" />
     <Compile Include="Source\Surface\ChangeLabelStyles\UI\SurfaceLabelView.xaml.cs">

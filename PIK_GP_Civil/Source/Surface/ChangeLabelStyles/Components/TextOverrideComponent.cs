@@ -11,8 +11,7 @@ using Autodesk.Civil.DatabaseServices.Styles;
 namespace PIK_GP_Civil.Surface.ChangeLabelStyles
 {
     public class TextOverrideComponent : ISafeComponent
-    {
-        private LabelStyleReferenceTextComponent component;
+    {        
         private Label label;
         private string name;
         private string overrideText;

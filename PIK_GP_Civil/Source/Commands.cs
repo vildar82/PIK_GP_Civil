@@ -118,7 +118,7 @@ namespace PIK_GP_Civil
             CommandStart.Start(doc =>
             {
                 var scls = new Surface.ChangeLabelStyles.SurfaceChangeLabelStyles(doc);
-                scls.ChangeStyles("m500", "m1000", 2);
+                scls.ChangeStyles("m500", "m1000", 0.5);
             });
         }
 
@@ -128,7 +128,7 @@ namespace PIK_GP_Civil
             CommandStart.Start(doc =>
             {
                 var scls = new Surface.ChangeLabelStyles.SurfaceChangeLabelStyles(doc);
-                scls.ChangeStyles("m1000", "m500", 0.5);
+                scls.ChangeStyles("m1000", "m500", 2);
             });
         }        
 

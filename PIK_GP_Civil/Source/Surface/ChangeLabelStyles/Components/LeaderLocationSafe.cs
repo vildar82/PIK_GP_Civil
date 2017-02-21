@@ -7,52 +7,70 @@ using System.Text;
 using System.Threading.Tasks;
 using AcadLib;
 using AcadLib.Extensions;
+using Autodesk.Aec.DatabaseServices;
 
 namespace PIK_GP_Civil.Surface.ChangeLabelStyles
 {
-    public class LeaderLocationSafe : ISafeComponent
+    public class LeaderLocationSafe
     {
-        double scale;
-        Point3d location;
-        Point3d labelLocation;
-        Vector3d dragOffset;
-        bool dragged;
-        double labelLenghtNeed;
+        double scale;            
         Label label;
+        private LabelStyleScale newScaleStyle;
 
-        public LeaderLocationSafe(Label label, double scale)
+        public LeaderLocationSafe(Label label, LabelStyleScale newScaleStyle, double scale)
         {
             this.label = label;
             this.scale = scale;
-            location = label.AnchorInfo.Location;
-            labelLocation = label.LabelLocation;
-            dragged = label.Dragged;
-            dragOffset = label.DraggedOffset;
-            labelLenghtNeed = scale == 2 ? 10 : 5; // Для масштаба 1000 - длина полки 10мм, для 500 - 5мм.
-        }
-        public void Restore()
-        {            
-            if (!dragged || dragOffset.X >= 0) return;
+            this.newScaleStyle = newScaleStyle;            
+        }        
+        
+        /// <summary>
+        /// Смена стиля метки. Проверка стиля (зеркальный/обычный)
+        /// </summary>
+        public void ChangeLabelStyle()
+        {
+            // Определение типа зеркальности текущего стиля метки
+            var mirrStyle = LabelStyleScale.IsMirrorStyle(label.StyleName);
+            // Определение типа стиля по положению метки - если вектор выноски в -x то это зеркальный тип
+            var mirrLabel = GetTypeMirrorLabel(label);
+            // Стиль по типу зеркальности
+            var newStyle = newScaleStyle.GetStyle(mirrLabel);
 
-            // Определение длины полки
-            Point3d ptLabelLineEnd;
-            var curLabelLineLength = GetLabelLineLength(out ptLabelLineEnd);
-            // Если длина полки отличается от заданной в стиле (для 500 - 5мм, для 1000 - 10мм)
-            if (!curLabelLineLength.IsEqual(labelLenghtNeed, 0.1))
+            // Сохранение положения метки
+            var labelLocationOld = label.LabelLocation;
+
+            label.StyleId = newStyle.Id;    
+            
+            // Если зеркальность стиля не соответствует метке, то процедура исправления
+            if (mirrStyle != mirrLabel)
             {
-                // Смещение точки полки и изменение вектора смещения выноски
-                var newLabelLocation = new Point3d(ptLabelLineEnd.X- 10, ptLabelLineEnd.Y, ptLabelLineEnd.Z);
-                label.LabelLocation = newLabelLocation;
-                label.LeaderAttachment = Autodesk.Civil.LeaderAttachmentBehaviorType.ToMarkerExtents;
-                //label.DraggedOffset = dragOffset;                                  
+                CorrectMirror(labelLocationOld, mirrLabel);
             }
         }
 
-        private double GetLabelLineLength(out Point3d ptLabelLineEnd)
+        /// <summary>
+        /// Коррктировка положения выноски в соответствии с зеркальностью метки и стиля
+        /// </summary>
+        /// <param name="labelLocationOld">Старое положение метки</param>
+        private void CorrectMirror(Point3d labelLocationOld, bool mirrLabel)
         {
-            ptLabelLineEnd = location + dragOffset;
-            var length = ptLabelLineEnd - labelLocation;
-            return length.Length;
+            label.ResetLocation();
+            var lengthLabel = scale == 2 ? 5 : 10;
+            var dir = mirrLabel ? 1 : -1;
+            label.LabelLocation = new Point3d(labelLocationOld.X + lengthLabel * dir, labelLocationOld.Y, labelLocationOld.Z);
+        }
+
+        
+
+        /// <summary>
+        /// Определение типа зеркальности метки
+        /// </summary>
+        /// <param name="label">Метка</param>
+        /// <returns>Зеркальная или нет</returns>
+        private bool GetTypeMirrorLabel(Label label)
+        {
+            // Если смещена выноска в противоположном X направлении
+            return label.Dragged && label.DraggedOffset.X < 0;
         }
     }
 }

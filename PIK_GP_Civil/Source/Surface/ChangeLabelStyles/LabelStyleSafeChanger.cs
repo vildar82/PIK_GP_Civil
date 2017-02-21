@@ -25,12 +25,14 @@ namespace PIK_GP_Civil.Surface.ChangeLabelStyles
             this.scale = scale;
         }
 
-        public void Change(ObjectId newStyleId)
+        public void Change(LabelStyleScale newStyle)
         {
             // Сохранение привязанных значений
             ReadReferences();
 
-            label.StyleId = newStyleId;
+            var leaderLocationSave = new LeaderLocationSafe(label,newStyle, scale);
+            // Изменение стиля с сохранением положения выноски
+            leaderLocationSave.ChangeLabelStyle();
 
             WriteReferences();
         }
@@ -65,9 +67,7 @@ namespace PIK_GP_Civil.Surface.ChangeLabelStyles
                     var textOverrideSafeComp = new TextOverrideComponent(label, textComp.Name, overrideText);
                     safeComponents.Add(textOverrideSafeComp);
                 }
-            }
-            // Сохранение положение полки
-            safeComponents.Add(new LeaderLocationSafe(label, scale));
+            }            
         }
     }
 }
