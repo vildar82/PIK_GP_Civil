@@ -17,10 +17,12 @@ namespace PIK_GP_Civil.Surface.ChangeLabelStyles
     {
         private Label label;
         private List<ISafeComponent> safeComponents;
+        private double scale;
 
-        public LabelStyleSafeChanger(Label label)
+        public LabelStyleSafeChanger(Label label, double scale)
         {
-            this.label = label;            
+            this.label = label;
+            this.scale = scale;
         }
 
         public void Change(ObjectId newStyleId)
@@ -64,6 +66,8 @@ namespace PIK_GP_Civil.Surface.ChangeLabelStyles
                     safeComponents.Add(textOverrideSafeComp);
                 }
             }
+            // Сохранение положение полки
+            safeComponents.Add(new LeaderLocationSafe(label, scale));
         }
     }
 }

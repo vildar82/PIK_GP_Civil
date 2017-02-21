@@ -12,6 +12,8 @@ using Autodesk.Civil.ApplicationServices;
 using Autodesk.Civil.DatabaseServices.Styles;
 using PIK_GP_Civil.Styles;
 using System.Text.RegularExpressions;
+using Autodesk.AutoCAD.Geometry;
+using System.Collections.Specialized;
 
 namespace PIK_GP_Civil.Surface.ChangeLabelStyles
 {
@@ -32,17 +34,19 @@ namespace PIK_GP_Civil.Surface.ChangeLabelStyles
         int countLabelChangedStyleSlope;
         int countLabelElevation;
         int countLabelSlope;
+        double scale;
 
         public SurfaceChangeLabelStyles(Document doc)
         {
-            this.doc = doc;
+            this.doc = doc;            
             civil = CivilApplication.ActiveDocument;            
         }
 
-        public void ChangeStyles(string fromScale, string toScale)
+        public void ChangeStyles(string fromScale, string toScale, double scale)
         {
             if (fromScale == null || toScale == null) return;
 
+            this.scale = scale;
             this.fromScale = fromScale;
             this.toScale = toScale;
             countLabelChangedStyleElevation = 0;
@@ -113,11 +117,11 @@ namespace PIK_GP_Civil.Surface.ChangeLabelStyles
             ObjectId newStyleId = ObjectId.Null;            
             if (dbo is SurfaceElevationLabel)
             {
-                var label = dbo as SurfaceElevationLabel;                
+                var label = dbo as SurfaceElevationLabel;  
                 newStyleId = GetNewLabelScaleStyle(label, ref dictChangeStylesElevLabel, ref dictLabelsStylesElevFromToScale);
                 if (SetLabelStyle(label, newStyleId))
                     countLabelChangedStyleElevation++;
-                countLabelElevation++;
+                countLabelElevation++;               
             }
             else if (dbo is SurfaceSlopeLabel)
             {
@@ -126,7 +130,7 @@ namespace PIK_GP_Civil.Surface.ChangeLabelStyles
                 if (SetLabelStyle(label, newStyleId))
                     countLabelChangedStyleSlope++;
                 countLabelSlope++;
-            }           
+            }                       
         }
 
         private void TestExploreLabel(SurfaceElevationLabel label)
@@ -147,12 +151,12 @@ namespace PIK_GP_Civil.Surface.ChangeLabelStyles
 
         }
 
-        private static bool SetLabelStyle(Label label,ObjectId newStyleId)
+        private bool SetLabelStyle(Label label, ObjectId newStyleId)
         {
             if (!newStyleId.IsNull)
             {
                 label.UpgradeOpen();
-                var changer = new LabelStyleSafeChanger(label);
+                var changer = new LabelStyleSafeChanger(label, scale);
                 changer.Change(newStyleId);                
                 return true;
             }
