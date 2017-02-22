@@ -58,9 +58,7 @@ namespace PIK_GP_Civil.Surface.ChangeLabelStyles
             var lengthLabel = scale == 2 ? 5 : 10;
             var dir = mirrLabel ? 1 : -1;
             label.LabelLocation = new Point3d(labelLocationOld.X + lengthLabel * dir, labelLocationOld.Y, labelLocationOld.Z);
-        }
-
-        
+        }        
 
         /// <summary>
         /// Определение типа зеркальности метки

@@ -20,6 +20,13 @@ namespace PIK_GP_Civil.Surface.ChangeLabelStyles
 
         public StyleBase GetStyle(bool mirror)
         {
+            if (mirror)
+            {
+                if (toStyleMirror == null)
+                {
+
+                }
+            }
             return mirror ? (toStyleMirror ?? toStyle) : toStyle;
         }
 
