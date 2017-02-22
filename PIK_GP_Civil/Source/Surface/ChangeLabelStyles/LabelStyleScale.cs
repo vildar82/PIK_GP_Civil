@@ -24,8 +24,11 @@ namespace PIK_GP_Civil.Surface.ChangeLabelStyles
             {
                 if (toStyleMirror == null)
                 {
-
+                    // TODO Создать стиль из менеджера стилей
+                    // Пока его нет, возвращаем что есть
+                    return toStyle;
                 }
+                return toStyleMirror;
             }
             return mirror ? (toStyleMirror ?? toStyle) : toStyle;
         }
