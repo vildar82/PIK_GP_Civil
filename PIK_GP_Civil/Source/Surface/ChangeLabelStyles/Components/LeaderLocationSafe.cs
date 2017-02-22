@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 using AcadLib;
 using AcadLib.Extensions;
 using Autodesk.Aec.DatabaseServices;
+using Autodesk.AutoCAD.ApplicationServices;
+using Autodesk.AutoCAD.DatabaseServices;
 
 namespace PIK_GP_Civil.Surface.ChangeLabelStyles
 {
@@ -15,10 +17,12 @@ namespace PIK_GP_Civil.Surface.ChangeLabelStyles
     {
         double scale;            
         Label label;
-        private LabelStyleScale newScaleStyle;
+        LabelStyleScale newScaleStyle;
+        Database db;
 
-        public LeaderLocationSafe(Label label, LabelStyleScale newScaleStyle, double scale)
+        public LeaderLocationSafe(Label label, LabelStyleScale newScaleStyle, double scale, Database db)
         {
+            this.db = db;
             this.label = label;
             this.scale = scale;
             this.newScaleStyle = newScaleStyle;            

@@ -7,6 +7,7 @@ using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.Civil.DatabaseServices;
 using Autodesk.Civil.DatabaseServices.Styles;
 using AcadLib;
+using Autodesk.AutoCAD.ApplicationServices;
 
 namespace PIK_GP_Civil.Surface.ChangeLabelStyles
 {
@@ -15,12 +16,14 @@ namespace PIK_GP_Civil.Surface.ChangeLabelStyles
     /// </summary>
     public class LabelStyleSafeChanger
     {
-        private Label label;
-        private List<ISafeComponent> safeComponents;
-        private double scale;
+        Label label;
+        List<ISafeComponent> safeComponents;
+        double scale;
+        Database db;
 
-        public LabelStyleSafeChanger(Label label, double scale)
+        public LabelStyleSafeChanger(Label label, double scale, Database db)
         {
+            this.db = db;
             this.label = label;
             this.scale = scale;
         }
@@ -30,7 +33,7 @@ namespace PIK_GP_Civil.Surface.ChangeLabelStyles
             // Сохранение привязанных значений
             ReadReferences();
 
-            var leaderLocationSave = new LeaderLocationSafe(label,newStyle, scale);
+            var leaderLocationSave = new LeaderLocationSafe(label,newStyle, scale, db);
             // Изменение стиля с сохранением положения выноски
             leaderLocationSave.ChangeLabelStyle();
 

@@ -26,9 +26,9 @@ namespace PIK_GP_Civil.Surface.ChangeLabelStyles
         Document doc;
         CivilDocument civil;
         string fromScale;
-        string toScale;        
-        Dictionary<string, LabelStyleScale> dictLabelsStylesElevFromToScale;
-        Dictionary<string, LabelStyleScale> dictLabelsStylesSlopeFromToScale;        
+        string toScale;
+        Dictionary<string, string> dictLabelsStylesSpotElevFromToScale;
+        Dictionary<string, string> dictLabelsStylesSlopeFromToScale;
         int countLabelChangedStyleElevation;
         int countLabelChangedStyleSlope;
         int countLabelElevation;
@@ -37,8 +37,8 @@ namespace PIK_GP_Civil.Surface.ChangeLabelStyles
 
         public SurfaceChangeLabelStyles(Document doc)
         {
-            this.doc = doc;            
-            civil = CivilApplication.ActiveDocument;            
+            this.doc = doc;
+            civil = CivilApplication.ActiveDocument;
         }
 
         public void ChangeStyles(string fromScale, string toScale, double scale)
@@ -49,14 +49,15 @@ namespace PIK_GP_Civil.Surface.ChangeLabelStyles
             this.fromScale = fromScale;
             this.toScale = toScale;
             countLabelChangedStyleElevation = 0;
-            countLabelChangedStyleSlope = 0;            
+            countLabelChangedStyleSlope = 0;
 
             using (var t = doc.TransactionManager.StartTransaction())
-            {                
-                dictLabelsStylesElevFromToScale = GetStylesFromToScale(civil.Styles.LabelStyles.SurfaceLabelStyles.SpotElevationLabelStyles.EnumerateStyles());                
+            {
+                dictLabelsStylesSpotElevFromToScale = GetStylesFromToScale(civil.Styles.LabelStyles.SurfaceLabelStyles.SpotElevationLabelStyles.EnumerateStyles());
                 dictLabelsStylesSlopeFromToScale = GetStylesFromToScale(civil.Styles.LabelStyles.SurfaceLabelStyles.SlopeLabelStyles.EnumerateStyles());
 
-                if (!dictLabelsStylesElevFromToScale.Any() && !dictLabelsStylesSlopeFromToScale.Any())
+
+                if (!dictLabelsStylesSpotElevFromToScale.Any() && !dictLabelsStylesSlopeFromToScale.Any())
                 {
                     doc.Editor.WriteMessage($"\nНе найдено подходящих стилей меток заданного масштаба преобразования из '{fromScale}' -> в '{toScale}'.");
                     return;
@@ -64,12 +65,14 @@ namespace PIK_GP_Civil.Surface.ChangeLabelStyles
 
                 // Выбор меток
                 var sel = Select();
-                
-                foreach (var idEnt in sel)
+                var labels = GetLabels(sel, dictLabelsStylesSpotElevFromToScale, dictLabelsStylesSlopeFromToScale);
+
+                // Проверка стилей тилей - если нет, то загрузка из шаблона                                
+                CheckNeededStylesAndLoad(labels);
+
+                foreach (var labelScale in labels)
                 {
-                    if (!idEnt.IsValidEx()) continue;
-                    var dbo = idEnt.GetObject(OpenMode.ForRead);
-                    ChangeLabelStyle(dbo);                                                            
+                    labelScale.ChangeStyle(scale);
                 }
                 t.Commit();
 
@@ -78,11 +81,89 @@ namespace PIK_GP_Civil.Surface.ChangeLabelStyles
             }
         }
 
-        private Dictionary<string, LabelStyleScale> GetStylesFromToScale(IEnumerable<StyleBase> styles)
+        private void CheckNeededStylesAndLoad(List<LabelStyleScale> labels)
+        {            
+            var stylesNeeded = labels.GroupBy(g => new { g.LabelStyleType, g.ToStyleName }).
+                Select(s => new { styleName = s.Key.ToStyleName, styleType = s.Key.LabelStyleType });
+
+            var stylesToLoad = new List<Tuple<string, LabelStyleType>>();
+            // стили отсутствующие в текущем документе
+            foreach (var styleNeed in stylesNeeded)
+            {
+                var findStyleId = FindLabelStyleInRoot(civil.Styles, styleNeed.styleName, styleNeed.styleType);
+                if (findStyleId.IsNull)
+                {
+                    stylesToLoad.Add(new Tuple<string, LabelStyleType>(styleNeed.styleName, styleNeed.styleType));
+                }
+                // Зеркальный стиль
+                var styleNameMirr = LabelStyleScale.GetMirrorStyleName(styleNeed.styleName);
+                var findStyleMirrId = FindLabelStyleInRoot(civil.Styles, styleNeed.styleName, styleNeed.styleType);
+                if (findStyleMirrId.IsNull)
+                {
+                    stylesToLoad.Add(new Tuple<string, LabelStyleType>(styleNameMirr, styleNeed.styleType));
+                }
+            }
+
+            StyleManager.LoadStyles(doc.Database, (r) =>{
+                var idsStyles = new List<ObjectId>();
+                foreach (var styleNeed in stylesToLoad)
+                {
+                    var styleId = FindLabelStyleInRoot(r, styleNeed.Item1, styleNeed.Item2);
+                    idsStyles.Add(styleId);
+                }
+                return idsStyles;
+            });
+
+            // заполнение стилей
+            var dictStyles = new Dictionary<string, StyleBase>();
+            foreach (var styleNeed in stylesNeeded)
+            {
+                var styleId = FindLabelStyleInRoot(civil.Styles, styleNeed.styleName, styleNeed.styleType);
+                var style = styleId.GetObject( OpenMode.ForRead) as StyleBase;
+                dictStyles.Add(styleNeed.styleName + "##" + (int)styleNeed.styleType, style);
+            }
+
+            foreach (var label in labels)
+            {
+                StyleBase styleBase;
+                dictStyles.TryGetValue(label.ToStyleName + "##" + (int)label.LabelStyleType, out styleBase);
+                label.ToStyle = styleBase;
+                var styleMirr = LabelStyleScale.GetMirrorStyleName(label.ToStyleName);
+                dictStyles.TryGetValue(styleMirr + "##" + (int)label.LabelStyleType, out styleBase);
+                label.ToStyleMirror = styleBase;
+            }
+        }
+
+        private ObjectId FindLabelStyleInRoot(StylesRoot stylesRoot, string styleName, LabelStyleType labelStyleType)
         {
-            var dictFromToStyles = new Dictionary<string, LabelStyleScale>(StringComparer.OrdinalIgnoreCase);
-            var dictStyles = styles.ToDictionary(k=>k.Name, v =>v, StringComparer.OrdinalIgnoreCase);
-            
+            ObjectId resId = ObjectId.Null;
+            LabelStyleCollection styleCol = null;
+            if (labelStyleType == LabelStyleType.SurfaceSpotElevation)
+            {
+                styleCol = stylesRoot.LabelStyles.SurfaceLabelStyles.SpotElevationLabelStyles;                
+            }
+            else if (labelStyleType == LabelStyleType.SurfaceSlope)
+            {
+                styleCol = stylesRoot.LabelStyles.SurfaceLabelStyles.SlopeLabelStyles;
+            }
+            if (styleCol != null && styleCol.Contains(styleName))
+            {
+                resId = styleCol[styleName];
+            }
+            return ObjectId.Null;
+        }
+
+        /// <summary>
+        /// Получение словаря стилей смены масштаба (без зеркалирований).
+        /// Ключ - имя стили из котрого масштабируется, без зеркалирования
+        /// Значение - имя стиля в который масштабируется ключевой стиль
+        /// </summary>
+        /// <param name="styles">Стили</param>        
+        private Dictionary<string, string> GetStylesFromToScale(IEnumerable<StyleBase> styles)
+        {
+            var dictFromToStyles = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            var dictStyles = styles.ToDictionary(k => k.Name, v => v, StringComparer.OrdinalIgnoreCase);
+
             foreach (var item in styles)
             {
                 string styleNameWoMirr;
@@ -91,92 +172,56 @@ namespace PIK_GP_Civil.Surface.ChangeLabelStyles
                     var toStyleName = Regex.Replace(styleNameWoMirr, fromScale, toScale, RegexOptions.IgnoreCase).Trim();
                     StyleBase toStyle;
                     if (dictStyles.TryGetValue(toStyleName, out toStyle))
-                    {
-                        // Если есть зеркальный стиль
-                        StyleBase toStyleMirror;
-                        dictStyles.TryGetValue(MirrorStylePrefix + toStyle.Name, out toStyleMirror);
-                        dictFromToStyles.Add(styleNameWoMirr, new LabelStyleScale (toStyle, toStyleMirror));
+                    {                        
+                        dictFromToStyles.Add(styleNameWoMirr, toStyle.Name);
                     }
                 }
             }
             return dictFromToStyles;
         }
-
-        private bool IsStyleToScale(string name, out string nameWithoutMirror)
-        {
-            nameWithoutMirror = LabelStyleScale.GetStyleNameWithoutMirror(name);            
-            return (fromScale== string.Empty || nameWithoutMirror.IndexOf(fromScale, StringComparison.OrdinalIgnoreCase) == -1) &&
-                   (toScale == string.Empty || nameWithoutMirror.IndexOf(toScale, StringComparison.OrdinalIgnoreCase) != -1);
-        }
+                
         private bool IsStyleFromScale(string name, out string nameWithoutMirror)
         {
             nameWithoutMirror = LabelStyleScale.GetStyleNameWithoutMirror(name);
             return (toScale == string.Empty || nameWithoutMirror.IndexOf(toScale, StringComparison.OrdinalIgnoreCase) == -1) &&
                    (fromScale == string.Empty || nameWithoutMirror.IndexOf(fromScale, StringComparison.OrdinalIgnoreCase) != -1);
-        }
-
-        private void ChangeLabelStyle(Autodesk.AutoCAD.DatabaseServices.DBObject dbo)
-        {
-            LabelStyleScale newStyleId = null;            
-            if (dbo is SurfaceElevationLabel)
-            {
-                var label = dbo as SurfaceElevationLabel;  
-                newStyleId = GetNewLabelScaleStyle(label, ref dictLabelsStylesElevFromToScale);
-                if (SetLabelStyle(label, newStyleId))
-                    countLabelChangedStyleElevation++;
-                countLabelElevation++;               
-            }
-            else if (dbo is SurfaceSlopeLabel)
-            {
-                var label = dbo as SurfaceSlopeLabel;
-                newStyleId = GetNewLabelScaleStyle(label, ref dictLabelsStylesSlopeFromToScale);
-                if (SetLabelStyle(label, newStyleId))
-                    countLabelChangedStyleSlope++;
-                countLabelSlope++;
-            }                       
-        }
-
-        private void TestExploreLabel(SurfaceElevationLabel label)
-        {
-            var AllowsAnchorMarker = label.AllowsAnchorMarker;
-            var AllowsDimensionAnchors = label.AllowsDimensionAnchors;
-            var AnchorInfo = label.AnchorInfo;
-            var TextComponentIds = label.GetTextComponentIds();
-            foreach (ObjectId textCompId in TextComponentIds)
-            {
-                var textComp = textCompId.GetObject(OpenMode.ForRead) as LabelStyleReferenceTextComponent;                                
-                if (textComp != null)
-                {
-                    var refTextTargetId = label.GetReferenceTextTarget(textCompId);                    
-                    var refTextTarget = refTextTargetId.GetObject( OpenMode.ForRead);
-                }
-            }
-        }
-
-        private bool SetLabelStyle(Label label, LabelStyleScale newStyle)
-        {
-            if (newStyle!= null)
-            {
-                label.UpgradeOpen();
-                var changer = new LabelStyleSafeChanger(label, scale);
-                changer.Change(newStyle);                
-                return true;
-            }
-            return false;
-        }
-
-        private LabelStyleScale GetNewLabelScaleStyle(Label label,            
-            ref Dictionary<string, LabelStyleScale> dictLabelsStylesFromToScale)
-        {            
-            LabelStyleScale newStyle;
-            var styleNameWoMirr = LabelStyleScale.GetStyleNameWithoutMirror(label.StyleName);
-            dictLabelsStylesFromToScale.TryGetValue(styleNameWoMirr, out newStyle);                        
-            return newStyle;
-        }
-
+        }                
+        
         private List<ObjectId> Select()
         {
             return doc.Editor.Select("\nВыбор объектов:");
+        }
+
+        private List<LabelStyleScale> GetLabels(List<ObjectId> sel,
+            Dictionary<string, string> dictLabelsStylesSpotElevFromToScale,
+            Dictionary<string, string> dictLabelsStylesSlopeFromToScale)
+        {
+            var labels = new List<LabelStyleScale>();
+            foreach (var entId in sel)
+            {
+                if (entId.IsValidEx())
+                {
+                    var label = entId.GetObject(OpenMode.ForRead) as Label;
+                    if (label != null)
+                    {
+                        var toStyleName = LabelStyleScale.GetStyleNameWithoutMirror(label.StyleName);
+                        LabelStyleScale lss = null;
+                        if (label is SurfaceElevationLabel)
+                        {
+                            lss = new LabelStyleScale(label, LabelStyleType.SurfaceSpotElevation, toStyleName);
+                        }
+                        else if (label is SurfaceSlopeLabel)
+                        {
+                            lss = new LabelStyleScale(label, LabelStyleType.SurfaceSlope, toStyleName);
+                        }
+                        if (lss != null)
+                        {
+                            labels.Add(lss);
+                        }
+                    }
+                }
+            }
+            return labels;
         }
     }
 }

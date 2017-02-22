@@ -107,6 +107,8 @@
     <Compile Include="Source\Settings\CopyService.cs" />
     <Compile Include="Source\Settings\DrawingSettings.cs" />
     <Compile Include="Source\Styles\StyleHelper.cs" />
+    <Compile Include="Source\Styles\StyleManager.cs" />
+    <Compile Include="Source\Styles\TemplateFileType.cs" />
     <Compile Include="Source\Surface\ChangeLabelStyles\Components\ISafeComponent.cs" />
     <Compile Include="Source\Surface\ChangeLabelStyles\Components\LeaderLocationSafe.cs" />
     <Compile Include="Source\Surface\ChangeLabelStyles\Components\TextOverrideComponent.cs" />

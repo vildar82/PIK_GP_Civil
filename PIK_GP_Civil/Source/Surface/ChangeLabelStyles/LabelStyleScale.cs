@@ -4,39 +4,41 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Autodesk.Civil.DatabaseServices.Styles;
+using Autodesk.AutoCAD.ApplicationServices;
+using Autodesk.Civil.DatabaseServices;
+using Autodesk.AutoCAD.DatabaseServices;
+using Autodesk.Civil.ApplicationServices;
+using PIK_GP_Civil.Styles;
 
 namespace PIK_GP_Civil.Surface.ChangeLabelStyles
 {
     public class LabelStyleScale
-    {
-        private StyleBase toStyle;
-        private StyleBase toStyleMirror;
+    {                
+        Database db;        
+        Label label;
 
-        public LabelStyleScale(StyleBase toStyle, StyleBase toStyleMirror)
+        public LabelStyleScale(Label label, LabelStyleType labelStyleType, string toStyleName)
         {
-            this.toStyle = toStyle;
-            this.toStyleMirror = toStyleMirror;
+            db = label.Database;
+            this.label = label;
+            ToStyleName = toStyleName;
+            LabelStyleType = labelStyleType;
         }
+
+        public string ToStyleName { get; set; }
+        public LabelStyleType LabelStyleType { get; set; }
+        public StyleBase ToStyle { get; set; }
+        public StyleBase ToStyleMirror { get; set; }
 
         public StyleBase GetStyle(bool mirror)
-        {
-            if (mirror)
-            {
-                if (toStyleMirror == null)
-                {
-                    // TODO Создать стиль из менеджера стилей
-                    // Пока его нет, возвращаем что есть
-                    return toStyle;
-                }
-                return toStyleMirror;
-            }
-            return mirror ? (toStyleMirror ?? toStyle) : toStyle;
+        {   
+            return mirror ? (ToStyleMirror ?? ToStyle) : ToStyle;
         }
-
+        
         public static bool IsMirrorStyle(string styleName)
         {
             return styleName.StartsWith(SurfaceChangeLabelStyles.MirrorStylePrefix, StringComparison.OrdinalIgnoreCase);
-        }
+        }       
 
         /// <summary>
         /// Имя стиля, без зеркальности
@@ -50,5 +52,17 @@ namespace PIK_GP_Civil.Surface.ChangeLabelStyles
             }
             return name;
         }
+
+        public static string GetMirrorStyleName(string styleName)
+        {
+            return SurfaceChangeLabelStyles.MirrorStylePrefix + styleName;
+        }
+
+        public void ChangeStyle(double scale)
+        {
+            label.UpgradeOpen();
+            var changer = new LabelStyleSafeChanger(label, scale, db);
+            changer.Change(this);            
+        }        
     }
 }
