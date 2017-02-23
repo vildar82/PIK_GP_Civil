@@ -166,7 +166,8 @@ namespace PIK_GP_Civil.Surface.ChangeLabelStyles
 
             foreach (var item in styles)
             {
-                if (IsStyleFromScale(item.Name, out string styleNameWoMirr) && !dictFromToStyles.ContainsKey(styleNameWoMirr))
+                string styleNameWoMirr;
+                if (IsStyleFromScale(item.Name, out styleNameWoMirr) && !dictFromToStyles.ContainsKey(styleNameWoMirr))
                 {
                     var toStyleName = Regex.Replace(styleNameWoMirr, fromScale, toScale, RegexOptions.IgnoreCase).Trim();
                     StyleBase toStyle;
@@ -200,7 +201,8 @@ namespace PIK_GP_Civil.Surface.ChangeLabelStyles
             {
                 if (entId.IsValidEx())
                 {
-                    if (entId.GetObject(OpenMode.ForRead) is Label label)
+                    Label label = entId.GetObject(OpenMode.ForRead) as Label;
+                    if (label != null)
                     {
                         var toStyleName = LabelStyleScale.GetStyleNameWithoutMirror(label.StyleName);
                         LabelStyleScale lss = null;
