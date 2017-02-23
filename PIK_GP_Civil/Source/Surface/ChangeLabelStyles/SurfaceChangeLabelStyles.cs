@@ -27,7 +27,7 @@ namespace PIK_GP_Civil.Surface.ChangeLabelStyles
         CivilDocument civil;
         string fromScale;
         string toScale;
-        Dictionary<string, string> dictLabelsStylesSpotElevFromToScale;
+        Dictionary<string, string> dictLabelsStylesSpotFromToScale;
         Dictionary<string, string> dictLabelsStylesSlopeFromToScale;
         int countLabelChangedStyleElevation;
         int countLabelChangedStyleSlope;
@@ -53,11 +53,11 @@ namespace PIK_GP_Civil.Surface.ChangeLabelStyles
 
             using (var t = doc.TransactionManager.StartTransaction())
             {
-                dictLabelsStylesSpotElevFromToScale = GetStylesFromToScale(civil.Styles.LabelStyles.SurfaceLabelStyles.SpotElevationLabelStyles.EnumerateStyles());
+                dictLabelsStylesSpotFromToScale = GetStylesFromToScale(civil.Styles.LabelStyles.SurfaceLabelStyles.SpotElevationLabelStyles.EnumerateStyles());
                 dictLabelsStylesSlopeFromToScale = GetStylesFromToScale(civil.Styles.LabelStyles.SurfaceLabelStyles.SlopeLabelStyles.EnumerateStyles());
 
 
-                if (!dictLabelsStylesSpotElevFromToScale.Any() && !dictLabelsStylesSlopeFromToScale.Any())
+                if (!dictLabelsStylesSpotFromToScale.Any() && !dictLabelsStylesSlopeFromToScale.Any())
                 {
                     doc.Editor.WriteMessage($"\nНе найдено подходящих стилей меток заданного масштаба преобразования из '{fromScale}' -> в '{toScale}'.");
                     return;
@@ -65,7 +65,7 @@ namespace PIK_GP_Civil.Surface.ChangeLabelStyles
 
                 // Выбор меток
                 var sel = Select();
-                var labels = GetLabels(sel, dictLabelsStylesSpotElevFromToScale, dictLabelsStylesSlopeFromToScale);
+                var labels = GetLabels(sel, dictLabelsStylesSpotFromToScale, dictLabelsStylesSlopeFromToScale);
 
                 // Проверка стилей тилей - если нет, то загрузка из шаблона                                
                 CheckNeededStylesAndLoad(labels);
@@ -166,13 +166,12 @@ namespace PIK_GP_Civil.Surface.ChangeLabelStyles
 
             foreach (var item in styles)
             {
-                string styleNameWoMirr;
-                if (IsStyleFromScale(item.Name, out styleNameWoMirr) && !dictFromToStyles.ContainsKey(styleNameWoMirr))
+                if (IsStyleFromScale(item.Name, out string styleNameWoMirr) && !dictFromToStyles.ContainsKey(styleNameWoMirr))
                 {
                     var toStyleName = Regex.Replace(styleNameWoMirr, fromScale, toScale, RegexOptions.IgnoreCase).Trim();
                     StyleBase toStyle;
                     if (dictStyles.TryGetValue(toStyleName, out toStyle))
-                    {                        
+                    {
                         dictFromToStyles.Add(styleNameWoMirr, toStyle.Name);
                     }
                 }
@@ -201,8 +200,7 @@ namespace PIK_GP_Civil.Surface.ChangeLabelStyles
             {
                 if (entId.IsValidEx())
                 {
-                    var label = entId.GetObject(OpenMode.ForRead) as Label;
-                    if (label != null)
+                    if (entId.GetObject(OpenMode.ForRead) is Label label)
                     {
                         var toStyleName = LabelStyleScale.GetStyleNameWithoutMirror(label.StyleName);
                         LabelStyleScale lss = null;
